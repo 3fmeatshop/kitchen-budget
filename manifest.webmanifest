@@ -1,0 +1,29 @@
+{
+ "name": "Home Kitchen Budget",
+ "short_name": "Kitchen Budget",
+ "description": "Kitchen budget, menu plan and chef cards \u2014 works offline.",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#f2f5fa",
+ "theme_color": "#0a1a33",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

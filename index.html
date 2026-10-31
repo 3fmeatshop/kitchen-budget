@@ -1,0 +1,1622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1a33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kitchen Budget">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Home Kitchen Budget</title>
+<style>
+:root{
+  color-scheme: light;
+  --brand:#15346a; --brand-ink:#fffaf0; --brand-soft:#e7eef9; --brand-deep:#0a1a33;
+  --gold:#b08d44; --gold-soft:#f3ead6; --gold-ink:#7a5c1e;
+  --page:#f2f5fa; --surface:#fdfeff; --surface-2:#e6ecf5;
+  --ink:#0f1626; --ink-2:#47546b; --muted:#7a8599;
+  --line:#dde4ef; --axis:#c2ccdb; --ring:rgba(21,52,106,.10);
+  --series-1:#2a78d6; --series-2:#eb6834; --pace:#898781;
+  --good:#0ca30c; --good-ink:#006300; --warn:#fab219; --warn-ink:#7a5200; --crit:#d03b3b; --crit-ink:#a32020;
+  --good-bg:#e7f2e3; --warn-bg:#f8eed8; --crit-bg:#fbe9e9;
+  --radius:16px; --shadow:0 1px 2px rgba(10,26,51,.06),0 6px 18px rgba(10,26,51,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --brand:#d9b56a; --brand-ink:#1a0f0a; --brand-soft:#1a2640; --brand-deep:#060b16;
+    --gold:#d9b56a; --gold-soft:#2e2517; --gold-ink:#e6c98a;
+    --page:#080d17; --surface:#111a2b; --surface-2:#1a2438;
+    --ink:#eef2f9; --ink-2:#b9c3d4; --muted:#8b96a8;
+    --line:#243049; --axis:#33415c; --ring:rgba(217,181,106,.14);
+    --series-1:#3987e5; --series-2:#d95926; --pace:#898781;
+    --good-ink:#0ca30c; --warn-ink:#fab219; --crit-ink:#e66767;
+    --good-bg:#16301a; --warn-bg:#3a2e12; --crit-bg:#3a1a1a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+    --brand:#d9b56a; --brand-ink:#1a0f0a; --brand-soft:#1a2640; --brand-deep:#060b16;
+    --gold:#d9b56a; --gold-soft:#2e2517; --gold-ink:#e6c98a;
+    --page:#080d17; --surface:#111a2b; --surface-2:#1a2438;
+    --ink:#eef2f9; --ink-2:#b9c3d4; --muted:#8b96a8;
+    --line:#243049; --axis:#33415c; --ring:rgba(217,181,106,.14);
+    --series-1:#3987e5; --series-2:#d95926; --pace:#898781;
+    --good-ink:#0ca30c; --warn-ink:#fab219; --crit-ink:#e66767;
+    --good-bg:#16301a; --warn-bg:#3a2e12; --crit-bg:#3a1a1a;
+}
+*{box-sizing:border-box}
+html [hidden]{display:none !important}
+html,body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.num,td.r,th.r{font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:20;background:var(--brand);color:var(--brand-ink);padding:10px 16px calc(10px) 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.2px;flex:1;min-width:150px}
+header.top .sub{font-size:12px;opacity:.85;font-weight:500;display:block}
+nav.tabs{position:sticky;top:0;z-index:15;background:var(--surface);border-bottom:1px solid var(--line);display:flex;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:1 0 auto;border:0;background:none;padding:12px 14px;font-weight:600;color:var(--ink-2);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+main{max-width:1100px;margin:0 auto;padding:16px 16px 96px}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--ring);padding:16px;margin-bottom:16px}
+.card h2{font-size:15px;margin:0 0 4px;font-weight:700}
+.card .hint{color:var(--ink-2);font-size:13px;margin:0 0 12px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--surface);border:1px solid var(--ring);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.tile .k{font-size:12px;color:var(--ink-2);font-weight:600}
+.tile .v{font-size:22px;font-weight:700;margin-top:2px}
+.tile .s{font-size:12px;color:var(--muted);margin-top:2px}
+.hero{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.hero .big{font-size:34px;font-weight:800;line-height:1.1}
+.hero .of{color:var(--ink-2);font-size:14px}
+.badge{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px}
+.badge.good{background:var(--good-bg);color:var(--good-ink)}
+.badge.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.badge.crit{background:var(--crit-bg);color:var(--crit-ink)}
+.badge svg{width:16px;height:16px}
+.meter{position:relative;height:14px;background:var(--surface-2);border-radius:999px;margin:14px 0 6px;overflow:visible}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px}
+.meter .pace{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink)}
+.meter-legend{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);gap:8px;flex-wrap:wrap}
+.alert{display:flex;gap:10px;align-items:flex-start;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.alert svg{flex:0 0 18px;width:18px;height:18px;margin-top:1px}
+.alert.crit{background:var(--crit-bg);color:var(--crit-ink)}
+.alert.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.alert.good{background:var(--good-bg);color:var(--good-ink)}
+.alert b{color:inherit}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:16px}
+.filters label{display:flex;flex-direction:column;font-size:12px;font-weight:600;color:var(--ink-2);gap:4px;flex:1 1 140px;min-width:0}
+input,select,textarea{background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:9px 10px;min-height:40px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:0;border-color:var(--brand)}
+.btn{border:1px solid var(--axis);background:var(--surface);border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer;min-height:40px;white-space:nowrap}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.danger{color:var(--crit-ink);border-color:var(--crit)}
+.btn.sm{padding:5px 10px;min-height:32px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:12px;color:var(--ink-2);text-align:left;font-weight:600;border-bottom:1px solid var(--axis);padding:8px 6px}
+td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--surface-2)}
+.tbl-wrap{overflow-x:auto;margin:0 -4px}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;background:var(--surface-2);color:var(--ink-2);margin-left:4px;vertical-align:1px}
+.tag.mine{background:var(--brand-soft);color:var(--brand)}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.empty{text-align:center;padding:28px 12px;color:var(--ink-2)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;background:var(--brand);color:var(--brand-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;display:flex;align-items:center;gap:8px}
+.fab svg{width:20px;height:20px}
+dialog{border:0;border-radius:16px;padding:0;width:min(560px,calc(100vw - 24px));background:var(--surface);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog form{padding:18px}
+dialog h3{margin:0 0 12px;font-size:17px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.fgrid .full{grid-column:1/-1}
+.check{display:flex !important;flex-direction:row !important;align-items:center;gap:8px;font-size:14px !important;font-weight:500 !important;color:var(--ink) !important}
+.check input{width:18px;height:18px;min-height:0}
+.total-line{font-size:20px;font-weight:800;text-align:right;margin:12px 0 4px}
+.dlg-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font-size:11px;font-family:inherit}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin:4px 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px}
+.sw.box{height:10px;width:10px;border-radius:3px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--surface);font-size:12px;padding:6px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-10px;opacity:0;transition:opacity .1s;z-index:5}
+.tip b{display:block}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-weight:600;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1}
+.bar-cell{position:relative;min-width:80px}
+.bar-cell .b{height:8px;border-radius:4px;background:var(--series-1);margin-top:6px}
+.section-title{font-size:13px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px}
+.list-item{display:flex;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+.list-item .main{flex:1;min-width:0}
+.list-item .name{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.list-item .meta{font-size:12px;color:var(--ink-2)}
+.list-item .amt{font-weight:700;text-align:right;white-space:nowrap}
+.date-head{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink-2);padding:14px 4px 4px;border-bottom:1px solid var(--axis)}
+.icon-btn{border:0;background:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--ink-2)}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:18px;height:18px;display:block}
+.warnbar{background:var(--warn-bg);color:var(--warn-ink);padding:8px 16px;font-size:13px;font-weight:600;display:none}
+
+/* ---- app-style navigation ---- */
+nav.tabs button{display:flex;align-items:center;justify-content:center;gap:8px}
+nav.tabs button svg{width:20px;height:20px;flex:0 0 20px}
+@media (max-width:760px){
+  nav.tabs{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:40;border-top:1px solid var(--line);border-bottom:0;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 10px rgba(0,0,0,.06);overflow:visible}
+  nav.tabs button{flex:1 1 0;flex-direction:column;gap:2px;padding:8px 2px 7px;font-size:10.5px;font-weight:600;border-bottom:0;border-top:3px solid transparent;min-width:0}
+  nav.tabs button[aria-selected="true"]{border-top-color:var(--brand);background:var(--brand-soft)}
+  nav.tabs button svg{width:22px;height:22px}
+  main{padding-bottom:150px}
+  .fab{bottom:calc(76px + env(safe-area-inset-bottom));padding:12px 16px}
+  .toast{bottom:150px}
+  header.top{padding:10px 14px}
+}
+/* ---- segmented control & day chips ---- */
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:4px;gap:4px;margin:0 0 14px;position:sticky;top:0;z-index:12}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 6px;font-weight:700;color:var(--ink-2);cursor:pointer;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--brand);box-shadow:var(--shadow)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px 6px;scrollbar-width:thin}
+.chip{flex:0 0 auto;border:1px solid var(--axis);background:var(--surface);border-radius:12px;padding:6px 10px;text-align:center;cursor:pointer;min-width:62px;line-height:1.2}
+.chip b{display:block;font-size:13px}
+.chip span{font-size:11px;color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.chip[aria-pressed="true"] span{color:#fff}
+.chip.ok{border-color:var(--good)}
+.chip .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-left:3px;vertical-align:2px}
+.meal-block{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px}
+.meal-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.meal-pill{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:999px;padding:3px 9px;background:var(--brand-soft);color:var(--brand)}
+.meal-dish{font-size:16px;font-weight:700}
+.ing{width:100%;border-collapse:collapse;font-size:14px;margin-top:4px}
+.ing td{padding:5px 2px;border-bottom:1px dashed var(--line)}
+.ing td.q{text-align:right;font-weight:700;white-space:nowrap}
+.ing td.pp{text-align:right;color:var(--ink-2);font-size:12px;white-space:nowrap;width:70px}
+.bigbtn{white-space:normal;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;font-size:15px}
+.bigbtn svg{width:20px;height:20px}
+.daynav{display:flex;gap:8px;margin-top:12px}
+.daynav .btn{flex:1}
+.glance .list-item{cursor:pointer}
+.glance .list-item:hover{background:var(--surface-2)}
+/* ---- chef card dialog ---- */
+#dlgChef{width:min(640px,calc(100vw - 16px));max-height:calc(100vh - 24px)}
+#dlgChef .wrap{padding:14px;overflow:auto;max-height:calc(100vh - 140px)}
+#dlgChef img{width:100%;border-radius:10px;border:1px solid var(--line);display:block}
+#dlgChef .bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
+#dlgChef .bar .btn{flex:1 1 140px}
+
+/* ---- luxurious theme ---- */
+.serif,header.top h1,.card h2,.hero .big,.tile .v,.meal-dish,.section-title,dialog h3{font-family:"Playfair Display",Georgia,"Times New Roman",Times,serif}
+header.top{background:linear-gradient(135deg,#0a1a33 0%,#15346a 60%,#1e4a8c 100%);color:#fffaf0;border-bottom:3px solid var(--gold);padding-top:14px;padding-bottom:14px}
+header.top h1{font-size:21px;letter-spacing:.4px;font-weight:700}
+header.top h1::before{content:"";display:inline-block;width:10px;height:10px;transform:rotate(45deg);background:var(--gold);margin-right:10px;vertical-align:3px}
+header.top .sub{color:#e9d6a8;opacity:1;letter-spacing:.3px;margin-top:2px}
+.card h2{font-size:18px;font-weight:700;letter-spacing:.2px}
+.card{border:1px solid var(--line)}
+.tile{border:1px solid var(--line);border-top:3px solid var(--gold)}
+.tile .k{text-transform:uppercase;letter-spacing:.8px;font-size:11px;color:var(--gold-ink)}
+.tile .v{font-weight:700}
+.hero .big{font-weight:700;letter-spacing:.3px}
+.section-title{text-transform:none;letter-spacing:.3px;font-size:18px;color:var(--brand);border-bottom:1px solid var(--gold);padding-bottom:6px}
+.btn{border-radius:999px;border-color:var(--axis);letter-spacing:.2px}
+.btn.primary{background:linear-gradient(135deg,#102b57,#1e4a8c);border-color:var(--gold);color:#fffaf0;box-shadow:0 2px 8px rgba(10,26,51,.25)}
+.fab{background:linear-gradient(135deg,#102b57,#1e4a8c);border:1px solid var(--gold);color:#fffaf0}
+.bigbtn{border-radius:14px}
+nav.tabs{background:var(--surface)}
+nav.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--gold)}
+.seg{background:var(--surface-2);border:1px solid var(--line)}
+.seg button[aria-pressed="true"]{color:var(--brand);box-shadow:inset 0 -2px 0 var(--gold),var(--shadow)}
+.chip{border-color:var(--line)}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,#102b57,#1e4a8c);border-color:var(--gold)}
+.meal-pill{background:var(--gold-soft);color:var(--gold-ink);border:1px solid rgba(176,141,68,.35)}
+.meal-block{border-color:var(--line);background:linear-gradient(180deg,var(--surface),var(--surface))}
+.meal-dish{font-size:18px}
+.tag.mine{background:var(--gold-soft);color:var(--gold-ink)}
+.bar-cell .b{background:var(--gold)}
+input:focus,select:focus,textarea:focus{outline-color:var(--gold);border-color:var(--gold)}
+.meter .fill{box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+@media (max-width:760px){
+  nav.tabs{background:var(--brand-deep);border-top:2px solid var(--gold)}
+  nav.tabs button{color:#d9c9ad}
+  nav.tabs button[aria-selected="true"]{color:#f3dfa8;border-top-color:var(--gold);background:rgba(217,181,106,.12)}
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .btn.primary,:root:not([data-theme="light"]) .fab{color:#fffaf0}
+  :root:not([data-theme="light"]) .section-title{color:var(--gold)}
+}
+
+@media (max-width:520px){
+  .fgrid{grid-template-columns:1fr}
+  .hero .big{font-size:28px}
+  .tile .v{font-size:19px}
+  .hide-sm{display:none}
+}
+@media print{
+  header.top,nav.tabs,.fab,.filters .btn,.no-print{display:none !important}
+  body{background:#fff}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Home Kitchen Budget<span class="sub" id="hdrSub">Offline · saved on this device</span></h1>
+</header>
+<div class="warnbar" id="storageWarn">This browser is not saving data (private mode?). Use Backup before closing.</div>
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="dash" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></button>
+  <button role="tab" data-tab="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v8a3 3 0 01-3 3"/><path d="M17 21V3c-2 1.5-3 4-3 7s1 4 3 4"/></svg><span>Menu Plan</span></button>
+  <button role="tab" data-tab="exp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span>Expenses</span></button>
+  <button role="tab" data-tab="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></button>
+  <button role="tab" data-tab="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg><span>Products</span></button>
+  <button role="tab" data-tab="budgets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg><span>Budgets</span></button>
+</nav>
+<main id="app"></main>
+<button class="fab" id="fab" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add expense</button>
+<div class="toast" id="toast"></div>
+
+<!-- Expense dialog -->
+<dialog id="dlgExp">
+  <form method="dialog" id="fExp" autocomplete="off">
+    <h3 id="dlgExpTitle">Add expense</h3>
+    <div class="fgrid">
+      <label>Date<input type="date" name="date" required></label>
+      <label>Category<select name="category" required></select></label>
+      <label class="full">Item / product<input name="name" list="dlProducts" required placeholder="Type to search, e.g. Pork Kasim or Sardines"></label>
+      <label>Quantity<input name="qty" type="number" step="any" min="0" inputmode="decimal" required value="1"></label>
+      <label>Unit<input name="unit" list="dlUnits" required placeholder="kg, pc, can, pack"></label>
+      <label>Price per unit (₱)<input name="price" type="number" step="any" min="0" inputmode="decimal" required></label>
+      <label>Note / store (optional)<input name="note" placeholder="e.g. 3F Meatshop, palengke"></label>
+      <label class="check full" id="chkNewWrap" hidden><input type="checkbox" name="saveProduct" checked> Save this as a new product in my list</label>
+      <label class="check full" id="chkPriceWrap" hidden><input type="checkbox" name="updatePrice"> <span id="chkPriceTxt">Update product price</span></label>
+    </div>
+    <div class="total-line num" id="expTotal">₱0.00</div>
+    <div class="dlg-actions">
+      <button class="btn danger" type="button" id="btnExpDelete" hidden>Delete</button>
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn" type="button" id="btnExpAgain">Save &amp; add another</button>
+      <button class="btn primary" type="submit">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Product dialog -->
+<dialog id="dlgProd">
+  <form method="dialog" id="fProd" autocomplete="off">
+    <h3 id="dlgProdTitle">Add product</h3>
+    <div class="fgrid">
+      <label class="full">Product name<input name="name" required placeholder="e.g. Sardines in tomato sauce 155 g"></label>
+      <label>Category<select name="category" required></select></label>
+      <label>Unit<input name="unit" list="dlUnits" required placeholder="can, pc, kg, pack"></label>
+      <label>Price per unit (₱)<input name="price" type="number" step="any" min="0" inputmode="decimal" required></label>
+      <label>New category (optional)<input name="newcat" placeholder="Type to add a category"></label>
+    </div>
+    <div class="dlg-actions">
+      <button class="btn danger" type="button" id="btnProdDelete" hidden>Delete</button>
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn primary" type="submit">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Budget dialog -->
+<dialog id="dlgBud">
+  <form method="dialog" id="fBud" autocomplete="off">
+    <h3 id="dlgBudTitle">Set a budget</h3>
+    <div class="fgrid">
+      <label>Budget type<select name="type">
+        <option value="weekly">Weekly (7 days)</option>
+        <option value="biweekly">Bi-weekly (14 days)</option>
+        <option value="monthly">Monthly</option>
+        <option value="custom">Custom dates</option>
+      </select></label>
+      <label>Budget amount (₱)<input name="amount" type="number" step="any" min="1" inputmode="decimal" required></label>
+      <label>Start date<input name="start" type="date" required></label>
+      <label>End date<input name="end" type="date" required></label>
+      <label class="full">Name (optional)<input name="label" placeholder="e.g. Nov 1st half, Tipid plan"></label>
+    </div>
+    <p class="hint small" id="budInfo" style="margin-top:10px"></p>
+    <div class="dlg-actions">
+      <button class="btn danger" type="button" id="btnBudDelete" hidden>Delete</button>
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn primary" type="submit">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Chef card dialog -->
+<dialog id="dlgChef">
+  <div class="wrap"><div id="chefPreview" class="empty">Preparing…</div></div>
+  <div class="bar">
+    <label class="check" style="flex:1 1 100%;margin:0"><input type="checkbox" id="chefPP" checked> Show amount per person</label>
+    <button class="btn primary" type="button" id="chefShare">Share photo</button>
+    <button class="btn" type="button" id="chefSave">Save photo</button>
+    <button class="btn" type="button" id="chefCopy">Copy as text</button>
+    <button class="btn" type="button" data-close>Close</button>
+  </div>
+</dialog>
+<datalist id="dlProducts"></datalist>
+<datalist id="dlUnits"><option value="kg"><option value="g"><option value="pc"><option value="pack"><option value="can"><option value="bottle"><option value="bundle"><option value="tray"><option value="sack"><option value="jar"><option value="liter"><option value="box"></datalist>
+<input type="file" id="fileRestore" accept=".json,application/json" hidden>
+<script>
+const SEED = [["Ground Pork","Pork","kg",270.0],["Pork Belly (Fresh)","Pork","kg",270.0],["Sliced Pork Belly","Pork","kg",270.0],["Pork Pigue","Pork","kg",270.0],["Pork Kasim","Pork","kg",270.0],["Pork Lomo (Tenderloin)","Pork","kg",270.0],["Porkchop","Pork","kg",270.0],["Pork Ribs","Pork","kg",250.0],["Pork Pata","Pork","kg",250.0],["Pork Bones","Pork","kg",180.0],["Pork Mask","Pork","kg",250.0],["Pork Tail","Pork","kg",250.0],["Pork Skull","Pork","kg",100.0],["Pork Intestine (Large)","Pork","kg",200.0],["Pork Intestine (Small)","Pork","kg",200.0],["Pork Kidney","Pork","kg",270.0],["Pork Liver","Pork","kg",270.0],["Pork Heart","Pork","kg",250.0],["Pork Igado","Pork","kg",250.0],["Pork Lungs","Pork","kg",150.0],["Whole Chicken (Fresh)","Chicken","kg",200.0],["Whole Chicken (Magnolia)","Chicken","kg",185.0],["Chicken Breast","Chicken","kg",250.0],["Chicken Breast Fillet","Chicken","kg",250.0],["Chicken Leg Fillet","Chicken","kg",240.0],["Chicken Leg Quarter","Chicken","kg",170.0],["Chicken Wings (Fresh)","Chicken","kg",220.0],["Chicken Gizzard","Chicken","kg",230.0],["Chicken Liver","Chicken","kg",230.0],["Chicken Neck","Chicken","kg",140.0],["Beef Laman","Beef","kg",350.0],["Beef Belly (Fresh)","Beef","kg",350.0],["Ground Beef","Beef","kg",380.0],["Beef Ribs","Beef","kg",240.0],["Beef Shanks Slice","Beef","kg",320.0],["Beef Bone Marrow Sliced","Beef","kg",150.0],["Beef Pata","Beef","kg",250.0],["Beef Tail","Beef","kg",250.0],["Beef Head","Beef","kg",240.0],["Beef Tripe","Beef","kg",350.0],["Beef Internal Organs","Beef","kg",380.0],["Beef Skin","Beef","kg",120.0],["Beef Fats","Beef","kg",200.0],["T-Bone Steak (Local Beef)","Beef","kg",700.0],["Brazilian Ribeye Steak","Beef","kg",1500.0],["USDA Ribeye Steak Angus Beef (Imported)","Beef","kg",1700.0],["Wagyu Cubes","Beef","kg",1500.0],["Bangus","Seafood","kg",245.0],["Tilapia","Seafood","kg",170.0],["Galunggong","Seafood","kg",230.0],["Sari","Seafood","kg",200.0],["Matambaka, Big","Seafood","kg",280.0],["Matambaka, Small","Seafood","kg",220.0],["Lapu-Lapu","Seafood","kg",350.0],["Blue Marlin","Seafood","kg",350.0],["Yellowfin Tuna, Sliced","Seafood","kg",300.0],["Yellowfin Tuna, Small","Seafood","kg",250.0],["Swordfish, Big","Seafood","kg",320.0],["Swordfish, Small","Seafood","kg",250.0],["Shrimps","Seafood","kg",480.0],["Squid (Original)","Seafood","kg",480.0],["Squid (Kalawang)","Seafood","kg",230.0],["Crabs","Seafood","kg",600.0],["Pitik","Seafood","kg",1500.0],["Lobster, Small","Seafood","kg",1500.0],["Lobster, Big","Seafood","kg",1700.0],["Halaan (Clams)","Seafood","kg",150.0],["Pure Meat Bacon (1 kg)","Processed Meats","pack",410.0],["Pork Samgyupsal Belly (1 kg)","Processed Meats","pack",380.0],["Pork Samgyupsal Jowls (1 kg)","Processed Meats","pack",320.0],["Lechon Belly Roll (1 kg)","Processed Meats","pack",320.0],["Beef Samgyupsal (Local) (1 kg)","Processed Meats","pack",450.0],["Beef Samgyupsal (Imported) (1 kg)","Processed Meats","pack",650.0],["Chicken Samgyupsal (1 kg)","Processed Meats","pack",350.0],["Beef Tapa (1 kg)","Processed Meats","pack",370.0],["Beef Tapa (225 g)","Processed Meats","pack",85.0],["Pork Tender Tocino (1 kg)","Processed Meats","pack",295.0],["Pork Tender Tocino (225 g)","Processed Meats","pack",68.0],["Pork BBQ (1 kg)","Processed Meats","pack",295.0],["Tender Juicy Hotdog (1 kg)","Processed Meats","pack",195.0],["Authentic Ilocos Garlic Longganisa (1 kg)","Processed Meats","pack",350.0],["Tuguegarao Garlic Longganisa (1 kg)","Processed Meats","pack",195.0],["Homemade Pork Siomai (24 pcs)","Processed Meats","pack",140.0],["Homemade Pork Sharkfin Dumplings (24 pcs)","Processed Meats","pack",140.0],["Homemade Pork Japanese Dumplings (16 pcs)","Processed Meats","pack",140.0],["Assorted Vegetables (Pakbet)","Vegetables","kg",92.0],["Bamboo Shoots (Labong)","Vegetables","kg",115.0],["Bell Pepper Red & Green, Big","Vegetables","kg",253.0],["Bell Pepper Red & Green, Small","Vegetables","kg",207.0],["Bitter Gourd (Ampalaya, for Pakbet)","Vegetables","kg",92.0],["Bitter Gourd (Ampalaya, Long)","Vegetables","kg",115.0],["Bitter Gourd Leaves (Dahon ng Ampalaya)","Vegetables","bundle",34.5],["Bottle Gourd (Upo)","Vegetables","pc",40.25],["Broccoli, Cleaned","Vegetables","kg",230.0],["Broccoli, Uncleaned","Vegetables","kg",161.0],["Cabbage (Repolyo)","Vegetables","kg",69.0],["Carrots (Karot)","Vegetables","kg",115.0],["Cauliflower","Vegetables","kg",161.0],["Celery (Kintsay)","Vegetables","kg",138.0],["Chayote (Sayote)","Vegetables","kg",46.0],["Chayote Shoot","Vegetables","bundle",51.75],["Cherry Tomato","Vegetables","kg",207.0],["Chili (Sili Pakbet)","Vegetables","kg",115.0],["Chili, Big (Sili Dynamite)","Vegetables","kg",115.0],["Chinese Pechay (Umbok)","Vegetables","kg",57.5],["Chives (Kutchay)","Vegetables","kg",138.0],["Choysum","Vegetables","kg",138.0],["Coriander Leaves (Wansoy/Cilantro)","Vegetables","kg",690.0],["Cucumber (Pipino)","Vegetables","kg",92.0],["Eggplant (Talong)","Vegetables","kg",69.0],["Eggplant, Long Big","Vegetables","kg",92.0],["Garlic Chive","Vegetables","bundle",115.0],["Green Beans (Baguio Beans)","Vegetables","kg",138.0],["Green Onion, Big Leaves (Leeks)","Vegetables","kg",115.0],["Heart of Banana (Puso ng Saging)","Vegetables","pc",40.25],["Iceberg Lettuce (Litsugas Baguio)","Vegetables","kg",345.0],["Lady Finger (Okra)","Vegetables","kg",80.5],["Lemon Grass (Tanglad)","Vegetables","kg",115.0],["Lettuce Green Ice","Vegetables","kg",437.0],["Moringa Fruit (Bunga ng Malunggay)","Vegetables","bundle",69.0],["Moringa Leaves (Dahon ng Malunggay)","Vegetables","bundle",46.0],["Mustard Green (Mustasa)","Vegetables","kg",230.0],["Napa Cabbage","Vegetables","kg",69.0],["Native Pechay","Vegetables","kg",92.0],["Pandan Leaves","Vegetables","kg",172.5],["Parsley Leaves","Vegetables","kg",690.0],["Potato (Patatas)","Vegetables","kg",103.5],["Potato, Marble","Vegetables","kg",138.0],["Pumpkin (Kalabasa)","Vegetables","kg",34.5],["Pumpkin Flower/Leaves (Sabong ng Kalabasa)","Vegetables","bundle",34.5],["Purple Yam (Ube)","Vegetables","kg",46.0],["Radish (Labanos)","Vegetables","kg",103.5],["Romaine Lettuce","Vegetables","kg",207.0],["Saluyot Leaves","Vegetables","kg",23.0],["Sili Leaves (Dahon ng Sili)","Vegetables","bundle",34.5],["Sili Taiwan (Sili Labuyo)","Vegetables","kg",115.0],["Snow Peas (Sitsaro)","Vegetables","kg",322.0],["Spinach (Alugbati)","Vegetables","bundle",28.75],["Sponge Gourd (Patola)","Vegetables","kg",57.5],["Sprouted Monggo","Vegetables","kg",69.0],["String Beans (Sitaw)","Vegetables","kg",80.5],["Sweet Potato (Kamote)","Vegetables","kg",86.25],["Sweet Potato Leaves","Vegetables","bundle",28.75],["Taiwan Pechay (Bokchoy)","Vegetables","kg",207.0],["Taro Root Crop (Gabi)","Vegetables","kg",74.75],["Taro Stem for Laing (Gabi)","Vegetables","kg",69.0],["Tomato (Kamatis)","Vegetables","kg",80.5],["Water Spinach (Kangkong)","Vegetables","bundle",40.25],["Winged Beans (Sigarilyas)","Vegetables","kg",149.5],["Apple, Red Small","Fruits","pc",28.75],["Apple, Red Big","Fruits","pc",34.5],["Banana (Native)","Fruits","kg",51.75],["Banana (Lakatan)","Fruits","kg",92.0],["Banana (Lakatan Davao)","Fruits","kg",115.0],["Buko (Fresh)","Fruits","pc",46.0],["Calamansi","Fruits","kg",103.5],["Dragon Fruit","Fruits","kg",161.0],["Grapes","Fruits","kg",287.5],["Grapes, Green","Fruits","kg",287.5],["Honeydew","Fruits","kg",287.5],["Kiwi","Fruits","pc",46.0],["Langka, Cleaned","Fruits","kg",161.0],["Lansones","Fruits","kg",253.0],["Lemon","Fruits","pc",28.75],["Longan","Fruits","kg",230.0],["Mandarin (Dalandan)","Fruits","kg",69.0],["Mango","Fruits","kg",195.5],["Mangosteen","Fruits","kg",230.0],["Melon, Local","Fruits","kg",92.0],["Mini Mandarin (Kiat-Kiat)","Fruits","pack",138.0],["Orange","Fruits","pc",34.5],["Orange, Big","Fruits","pc",34.5],["Papaya, Green","Fruits","kg",46.0],["Papaya, Ripe","Fruits","kg",115.0],["Pears (Peras)","Fruits","pc",34.5],["Pineapple (Pinya)","Fruits","pc",69.0],["Rambutan","Fruits","kg",138.0],["Strawberry","Fruits","kg",69.0],["Watermelon (Pakwan)","Fruits","kg",40.25],["Fresh Garlic (Bawang)","Condiments","bag (5 kg)",690.0],["Peeled Garlic","Condiments","kg",161.0],["Onion (Sibuyas)","Condiments","bag (10 kg)",1150.0],["White Onion (Puting Sibuyas)","Condiments","bag (7.5 kg)",1035.0],["Ginger (Luya)","Condiments","kg",138.0],["Bean Curd (Tofu)","Condiments","kg",115.0],["Sliced Loaf Bread (Gardenia)","Condiments","pack",97.75],["Chicharon","Condiments","pack",40.25],["3rd Class Flour","Grocery","pack",41.4],["Ajinomoto Vetsin","Grocery","pack",264.5],["All-Purpose Cream","Grocery","pack",82.8],["All-Purpose Flour","Grocery","pack",69.0],["Annatto Seeds","Grocery","pack",552.0],["Baking Powder","Grocery","pack",207.0],["Bread Crumbs","Grocery","pack",132.25],["Butter Golden Churn","Grocery","pack",74.75],["Cajun Powder","Grocery","pack",437.0],["Pancit Canton 227g","Grocery","pack",40.0],["Carbonara Sauce","Grocery","pack",98.9],["Chicken Powder","Grocery","pack",216.2],["Cinnamon Bark","Grocery","pack",402.5],["Cinnamon Stick","Grocery","pack",575.0],["Cornstarch","Grocery","pack",59.8],["Crushed Black Pepper (Paminta Durog)","Grocery","pack",483.0],["Eden Cheese, Small","Grocery","pack",66.7],["Eden Cheese, Big","Grocery","pack",166.75],["Glutinous Powder","Grocery","pack",55.2],["Gochugaru Powder","Grocery","pack",546.25],["Gochujang Red Paste","Grocery","pack",511.75],["Hoisin Sauce","Grocery","pack",217.35],["Iodized Salt","Grocery","pack",24.84],["Knorr Cubes – Beef","Grocery","pc",5.41],["Knorr Cubes – Chicken","Grocery","pc",5.41],["Knorr Cubes – Pork","Grocery","pc",5.41],["Knorr Cubes – Shrimp","Grocery","pc",5.41],["Laurel / Bay Leaves","Grocery","pack",402.5],["Lion Custard Powder","Grocery","pack",287.5],["Macaroni Pasta","Grocery","pack",133.4],["Malabon Soy Sauce","Grocery","pack",655.5],["Mang Tomas 550g","Grocery","pack",63.25],["Margarine","Grocery","pack",115.0],["Master Soy Sauce 760ml","Grocery","pack",285.2],["Meat Tenderizer 100g","Grocery","pack",180.0],["Meat Tenderizer 105g","Grocery","pack",151.2],["Palabok Sauce","Grocery","pack",48.3],["Pancit Palabok","Grocery","pack",63.25],["Paprika Powder","Grocery","pack",550.0],["Pineapple Chunks 822g","Grocery","pack",126.5],["Pineapple Chunks 560g","Grocery","pack",97.75],["Pineapple Chunks 432g","Grocery","pack",78.2],["Pineapple Chunks 227g","Grocery","pack",42.55],["Pineapple Slices (Large)","Grocery","pack",138.0],["Pineapple Slices (Medium)","Grocery","pack",86.25],["Pineapple Slices (Small)","Grocery","pack",46.0],["RAM Pickle Relish","Grocery","pack",143.75],["Sibot","Grocery","pack",25.0],["Sinigang sa Gabi","Grocery","pack",20.0],["Sinigang sa Sampalok","Grocery","pack",20.0],["Spaghetti Pasta 800g","Grocery","pack",118.45],["Royal Spaghetti Pasta 1kg","Grocery","pack",129.95],["Star Anise 200g","Grocery","pack",165.0],["Tomato Paste","Grocery","pack",40.25],["Tomato Sauce (Small)","Grocery","pack",50.6],["Tomato Sauce (Large)","Grocery","pack",115.0],["Turmeric Powder","Grocery","pack",480.0],["Vegetable Lard","Grocery","pack",115.0],["White Sugar","Grocery","pack",85.1],["Whole Black Pepper (Paminta Buo)","Grocery","pack",598.0],["Whole Mushrooms","Grocery","pack",57.5],["Yeast","Grocery","pack",250.0],["Young Corn","Grocery","pack",66.7],["Onion Powder","Grocery","pack",650.0],["Garlic Powder","Grocery","pack",450.0],["Olive Oil 250ml","Grocery","pack",368.0],["Aluminum Foil","Grocery","pack",85.0],["Cling Wrap","Grocery","pack",350.0],["Light Soy Sauce 1.9L","Grocery","pack",441.0],["Mushroom Dark Soy Sauce 1.9L","Grocery","pack",483.0],["Chinese Black Vinegar 500ml","Grocery","pack",170.8],["Hengsun Vinegar 1.75L","Grocery","pack",291.2],["Cooking Wine","Grocery","pack",112.0],["Rice Wine","Grocery","pack",217.0],["Soybean Paste","Grocery","pack",204.4],["Bean Chili Oil Paste","Grocery","pack",403.2],["Chili Garlic Sauce 245g","Grocery","pack",308.0],["Chili Vegetable Oil 210ml","Grocery","pack",165.2],["Sichuan Pepper Oil 250ml","Grocery","pack",340.2],["Sichuan Pepper Corn 100g","Grocery","pack",278.6],["Pepper Salt Powder","Grocery","pack",162.4],["Wang Shou Yi 13 Spices","Grocery","pack",98.0],["Black Beans Tausi, Dried","Grocery","pack",196.0],["Thai Red Curry Paste","Grocery","pack",350.0],["Qiu Xia Hotpot Condiments 300g","Grocery","pack",210.0],["Instant Soup Base Haidilao 150g","Grocery","pack",207.2],["Qing Ji Chaotian Pepper Chicken Flavor 248g","Grocery","pack",189.0],["Sour Pickles Longbean 330g","Grocery","pack",217.0],["Taiwan Pickled Bamboo Shoots","Grocery","pack",432.6],["Spicy Wild Mountain Pepper, Pickled 400g","Grocery","pack",504.0],["Fry Batter Mix 120g","Grocery","pack",64.4],["Garlic (per kg, from bag rate)","Condiments","kg",138.0],["Onion (per kg, from bag rate)","Condiments","kg",115.0],["Rice, regular milled","Rice & Eggs","kg",50,"est"],["Rice, sack 25 kg","Rice & Eggs","sack",1250,"est"],["Eggs, medium","Rice & Eggs","pc",8,"est"],["Eggs, medium (tray of 30)","Rice & Eggs","tray",240,"est"],["Cooking oil 1 L","Grocery","bottle",110,"est"],["Soy sauce 1 L","Grocery","bottle",70,"est"],["Cane vinegar 1 L","Grocery","bottle",45,"est"],["Patis 350 ml","Grocery","bottle",35,"est"],["Bagoong alamang 250 g","Grocery","jar",60,"est"],["Ground black pepper 50 g","Grocery","pack",35,"est"],["Laurel leaves small pack","Grocery","pack",15,"est"],["Sardines in tomato sauce 155 g","Canned Goods","can",25,"est"],["Corned beef 150 g","Canned Goods","can",45,"est"],["Meat loaf 150 g","Canned Goods","can",30,"est"],["Evaporated milk 370 ml","Canned Goods","can",45,"est"],["Tuna flakes 155 g","Canned Goods","can",35,"est"],["LPG refill 11 kg","Household","tank",1000,"est"],["Drinking water 5 gal refill","Beverages","gallon",30,"est"],["3-in-1 coffee","Beverages","pack",9,"est"],["Coconut milk (gata) 400 ml","Canned Goods","can",55,"est"],["Misua 100 g","Grocery","pack",20,"est"],["Sotanghon 100 g","Grocery","pack",25,"est"],["Dried monggo (mung beans)","Grocery","kg",120,"est"],["Bihon 227 g","Grocery","pack",35,"est"],["Curry powder small pack","Grocery","pack",20,"est"],["Tuyo (dried herring) 100 g","Seafood","pack",45,"est"],["Tinapa (smoked fish) 2 pcs","Seafood","pack",60,"est"],["Dried dilis 100 g","Seafood","pack",50,"est"],["Bagoong monamon (fish) 250 g","Grocery","jar",70,"est"],["Peanut butter 220 g","Grocery","jar",75,"est"],["Fresh miki noodles 500 g","Grocery","pack",60,"est"],["Malagkit (glutinous rice)","Rice & Eggs","kg",75,"est"],["Tablea (cacao) 100 g","Grocery","pack",60,"est"]];
+const RECIPES = [{"n":"Garlic rice, scrambled eggs with tomato","m":"B","r":true,"i":[["Eggs, medium",1.5,0],["Tomato (Kamatis)",0.0417,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Pork adobo with potatoes","m":"L","r":true,"i":[["Pork Kasim",0.2,1],["Potato (Patatas)",0.0833,0],["Garlic (per kg, from bag rate)",0.0167,0]],"t":["classic"],"g":""},{"n":"Ginisang sayote with ground pork","m":"D","r":true,"i":[["Chayote (Sayote)",0.1667,0],["Ground Pork",0.05,1],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0167,0],["Tomato (Kamatis)",0.025,0]],"t":["tipid","classic"],"g":""},{"n":"Tuguegarao garlic longganisa, garlic rice","m":"B","r":true,"i":[["Tuguegarao Garlic Longganisa (1 kg)",0.125,1],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["probinsya","classic"],"g":"Cagayan"},{"n":"Chicken tinola with sayote and malunggay","m":"L","r":true,"i":[["Chicken Leg Quarter",0.25,1],["Chayote (Sayote)",0.1667,0],["Moringa Leaves (Dahon ng Malunggay)",0.3333,0],["Ginger (Luya)",0.0167,0],["Onion (per kg, from bag rate)",0.0167,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Tortang talong","m":"D","r":true,"i":[["Eggplant (Talong)",0.1333,0],["Eggs, medium",1.0,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Arroz caldo with chicken neck","m":"B","r":false,"i":[["Chicken Neck",0.125,1],["Ginger (Luya)",0.0167,0],["Garlic (per kg, from bag rate)",0.0083,0],["Onion (per kg, from bag rate)",0.0083,0],["Green Onion, Big Leaves (Leeks)",0.0083,0],["Rice, regular milled",0.0667,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Pork sinigang (ribs) with kangkong, labanos, sitaw","m":"L","r":true,"i":[["Pork Ribs",0.2,1],["Water Spinach (Kangkong)",0.3333,0],["Radish (Labanos)",0.05,0],["String Beans (Sitaw)",0.0417,0],["Eggplant (Talong)",0.0417,0],["Tomato (Kamatis)",0.0417,0],["Taro Root Crop (Gabi)",0.0417,0],["Chili (Sili Pakbet)",0.0083,0],["Onion (per kg, from bag rate)",0.0167,0]],"t":["classic"],"g":""},{"n":"Ginisang upo with ground pork","m":"D","r":true,"i":[["Bottle Gourd (Upo)",0.3333,0],["Ground Pork",0.05,1],["Tomato (Kamatis)",0.025,0],["Onion (per kg, from bag rate)",0.0083,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Egg sandwich (sliced bread)","m":"B","r":false,"i":[["Sliced Loaf Bread (Gardenia)",0.3333,0],["Eggs, medium",1.3333,0]],"t":["tipid","classic"],"g":""},{"n":"Fried tilapia with pinakbet","m":"L","r":true,"i":[["Tilapia",0.25,1],["Assorted Vegetables (Pakbet)",0.1667,0],["Pork Belly (Fresh)",0.0417,1],["Tomato (Kamatis)",0.0333,0],["Onion (per kg, from bag rate)",0.0167,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya","classic"],"g":"Ilocano"},{"n":"Chopsuey with chicken liver","m":"D","r":true,"i":[["Chicken Liver",0.0417,1],["Cabbage (Repolyo)",0.05,0],["Carrots (Karot)",0.0333,0],["Chayote (Sayote)",0.05,0],["Broccoli, Uncleaned",0.05,0],["Young Corn",0.1667,0],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["classic"],"g":""},{"n":"Pork tocino, garlic rice, sliced tomato","m":"B","r":true,"i":[["Pork Tender Tocino (225 g)",0.5,1],["Tomato (Kamatis)",0.0417,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["classic"],"g":""},{"n":"Chicken afritada","m":"L","r":true,"i":[["Chicken Leg Quarter",0.25,1],["Potato (Patatas)",0.0833,0],["Carrots (Karot)",0.05,0],["Bell Pepper Red & Green, Small",0.0167,0],["Garlic (per kg, from bag rate)",0.0083,0],["Onion (per kg, from bag rate)",0.0167,0],["Tomato Sauce (Small)",0.3333,0]],"t":["fiesta","classic"],"g":""},{"n":"Dinengdeng (kalabasa, okra, saluyot) with fried galunggong","m":"D","r":true,"i":[["Pumpkin (Kalabasa)",0.0833,0],["Lady Finger (Okra)",0.0417,0],["String Beans (Sitaw)",0.0417,0],["Saluyot Leaves",0.0417,0],["Moringa Leaves (Dahon ng Malunggay)",0.1667,0],["Galunggong",0.0833,1],["Onion (per kg, from bag rate)",0.0083,0],["Tomato (Kamatis)",0.0167,0]],"t":["probinsya","tipid","classic"],"g":"Ilocano"},{"n":"Chicken sopas","m":"B","r":false,"i":[["Macaroni Pasta",0.1667,0],["Chicken Leg Quarter",0.0833,1],["Carrots (Karot)",0.025,0],["Cabbage (Repolyo)",0.05,0],["All-Purpose Cream",0.1667,0],["Onion (per kg, from bag rate)",0.0083,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["classic"],"g":""},{"n":"Beef nilaga with cabbage, pechay and potato","m":"L","r":true,"i":[["Beef Shanks Slice",0.1667,1],["Cabbage (Repolyo)",0.0833,0],["Native Pechay",0.0833,0],["Potato (Patatas)",0.0833,0],["Onion (per kg, from bag rate)",0.0167,0]],"t":["tipid","classic"],"g":""},{"n":"Ginisang pechay with tofu","m":"D","r":true,"i":[["Native Pechay",0.1333,0],["Bean Curd (Tofu)",0.0833,0],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Hotdog, fried egg, garlic rice","m":"B","r":true,"i":[["Tender Juicy Hotdog (1 kg)",0.0833,1],["Eggs, medium",1.0,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Pork menudo","m":"L","r":true,"i":[["Pork Kasim",0.1667,1],["Pork Liver",0.0333,1],["Potato (Patatas)",0.0833,0],["Carrots (Karot)",0.05,0],["Bell Pepper Red & Green, Small",0.0167,0],["Garlic (per kg, from bag rate)",0.0083,0],["Onion (per kg, from bag rate)",0.0167,0],["Tomato Sauce (Small)",0.3333,0]],"t":["fiesta","classic"],"g":""},{"n":"Ginisang togue with tofu","m":"D","r":true,"i":[["Sprouted Monggo",0.1167,0],["Bean Curd (Tofu)",0.05,0],["Carrots (Karot)",0.0167,0],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Pancit canton with cabbage","m":"B","r":false,"i":[["Pancit Canton 227g",0.5,0],["Cabbage (Repolyo)",0.05,0],["Carrots (Karot)",0.0167,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Sinigang na bangus","m":"L","r":true,"i":[["Bangus",0.25,1],["Water Spinach (Kangkong)",0.3333,0],["Radish (Labanos)",0.05,0],["String Beans (Sitaw)",0.0417,0],["Tomato (Kamatis)",0.0417,0],["Chili (Sili Pakbet)",0.0083,0],["Onion (per kg, from bag rate)",0.0167,0]],"t":["classic"],"g":""},{"n":"Ginisang ampalaya with egg","m":"D","r":true,"i":[["Bitter Gourd (Ampalaya, Long)",0.1,0],["Eggs, medium",0.6667,0],["Tomato (Kamatis)",0.025,0],["Onion (per kg, from bag rate)",0.0083,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Beef tapa, garlic rice, sliced tomato","m":"B","r":true,"i":[["Beef Tapa (225 g)",0.5,1],["Tomato (Kamatis)",0.0417,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["classic"],"g":""},{"n":"Chicken adobo with potatoes","m":"L","r":true,"i":[["Chicken Leg Quarter",0.25,1],["Potato (Patatas)",0.0833,0],["Garlic (per kg, from bag rate)",0.0167,0]],"t":["classic"],"g":""},{"n":"Ginisang kalabasa at sitaw with pork","m":"D","r":true,"i":[["Pumpkin (Kalabasa)",0.1667,0],["String Beans (Sitaw)",0.0833,0],["Pork Belly (Fresh)",0.0333,1],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Lugaw with tokwa and egg","m":"B","r":false,"i":[["Bean Curd (Tofu)",0.0833,0],["Eggs, medium",1.0,0],["Ginger (Luya)",0.0083,0],["Garlic (per kg, from bag rate)",0.0083,0],["Green Onion, Big Leaves (Leeks)",0.0083,0],["Rice, regular milled",0.0667,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Pork giniling with potatoes and carrots","m":"L","r":true,"i":[["Ground Pork",0.1667,1],["Potato (Patatas)",0.0833,0],["Carrots (Karot)",0.05,0],["Tomato Sauce (Small)",0.1667,0],["Garlic (per kg, from bag rate)",0.0083,0],["Onion (per kg, from bag rate)",0.0167,0]],"t":["classic"],"g":""},{"n":"Tilapia sinigang (light)","m":"D","r":true,"i":[["Tilapia",0.125,1],["Water Spinach (Kangkong)",0.1667,0],["Radish (Labanos)",0.0333,0],["Tomato (Kamatis)",0.025,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["classic"],"g":""},{"n":"Pork siomai, fried egg, garlic rice","m":"B","r":true,"i":[["Homemade Pork Siomai (24 pcs)",0.1667,1],["Eggs, medium",1.0,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["classic"],"g":""},{"n":"Pork pata humba","m":"L","r":true,"i":[["Pork Pata",0.25,1],["Garlic (per kg, from bag rate)",0.0167,0],["Onion (per kg, from bag rate)",0.0167,0]],"t":["probinsya","classic"],"g":"Visayas"},{"n":"Ginisang repolyo with ground pork","m":"D","r":true,"i":[["Cabbage (Repolyo)",0.1,0],["Carrots (Karot)",0.025,0],["Ground Pork",0.0333,1],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Tortang talong, garlic rice","m":"B","r":true,"i":[["Eggplant (Talong)",0.1,0],["Eggs, medium",1.0,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Fried galunggong with ginisang togue","m":"L","r":true,"i":[["Galunggong",0.25,1],["Sprouted Monggo",0.0833,0],["Pork Belly (Fresh)",0.025,1],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0],["Tomato (Kamatis)",0.025,0]],"t":["tipid","classic"],"g":""},{"n":"Pinakbet (light)","m":"D","r":true,"i":[["Assorted Vegetables (Pakbet)",0.1333,0],["Pork Belly (Fresh)",0.0333,1],["Tomato (Kamatis)",0.025,0],["Onion (per kg, from bag rate)",0.0083,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya","classic"],"g":"Ilocano"},{"n":"Fried porkchop with ginisang repolyo","m":"L","r":true,"i":[["Porkchop",0.2,1],["Cabbage (Repolyo)",0.0833,0],["Carrots (Karot)",0.0167,0],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Tofu and pechay in soy-garlic sauce","m":"D","r":true,"i":[["Bean Curd (Tofu)",0.1,0],["Native Pechay",0.0833,0],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Pork tocino, fried egg, garlic rice","m":"B","r":true,"i":[["Pork Tender Tocino (225 g)",0.3333,1],["Eggs, medium",1.0,0],["Garlic (per kg, from bag rate)",0.0083,0]],"t":["tipid","classic"],"g":""},{"n":"Sweet and sour tilapia","m":"L","r":true,"i":[["Tilapia",0.25,1],["Bell Pepper Red & Green, Small",0.0167,0],["Carrots (Karot)",0.025,0],["Pineapple Chunks 227g",0.1667,0],["Tomato Sauce (Small)",0.1667,0],["Onion (per kg, from bag rate)",0.0167,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["fiesta","classic"],"g":""},{"n":"Corned beef with garlic rice","m":"B","r":true,"i":[["Corned beef 150 g",0.3334,1],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Sardines with scrambled egg, garlic rice","m":"B","r":true,"i":[["Sardines in tomato sauce 155 g",0.25,1],["Eggs, medium",1,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Ginisang sardinas with pechay","m":"D","r":true,"i":[["Sardines in tomato sauce 155 g",0.5,1],["Native Pechay",0.1,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Tokwa't baboy with rice","m":"L","r":true,"i":[["Pork Belly (Fresh)",0.1,1],["Bean Curd (Tofu)",0.12,0],["Onion (per kg, from bag rate)",0.015,0],["Chili (Sili Pakbet)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Ginisang monggo-style togue with pork and malunggay","m":"D","r":true,"i":[["Sprouted Monggo",0.12,0],["Ground Pork",0.04,1],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Tomato (Kamatis)",0.025,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Pork BBQ, garlic rice","m":"B","r":1,"i":[["Pork BBQ (1 kg)",0.09,1],["Garlic (per kg, from bag rate)",0.008,0],["Tomato (Kamatis)",0.03,0]],"t":["classic"],"g":""},{"n":"Ilocos longganisa, fried egg, garlic rice","m":"B","r":1,"i":[["Authentic Ilocos Garlic Longganisa (1 kg)",0.08,1],["Eggs, medium",1,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid","classic"],"g":"Ilocano"},{"n":"Ginisang corned beef with potato, garlic rice","m":"B","r":1,"i":[["Corned beef 150 g",0.3,1],["Potato (Patatas)",0.05,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Tortang giniling (egg & ground pork), garlic rice","m":"B","r":1,"i":[["Ground Pork",0.04,1],["Eggs, medium",1,0],["Onion (per kg, from bag rate)",0.01,0],["Tomato (Kamatis)",0.02,0]],"t":["tipid","classic"],"g":""},{"n":"Goto (beef tripe lugaw)","m":"B","r":0,"i":[["Beef Tripe",0.05,1],["Rice, regular milled",0.067,0],["Ginger (Luya)",0.008,0],["Garlic (per kg, from bag rate)",0.008,0],["Green Onion, Big Leaves (Leeks)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Misua soup with patola and egg, rice","m":"B","r":1,"i":[["Misua 100 g",0.25,0],["Sponge Gourd (Patola)",0.06,0],["Eggs, medium",0.5,0],["Ground Pork",0.02,1],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Hotdog sandwich","m":"B","r":0,"i":[["Sliced Loaf Bread (Gardenia)",0.33,0],["Tender Juicy Hotdog (1 kg)",0.07,1]],"t":["tipid","classic"],"g":""},{"n":"Meat loaf and egg, garlic rice","m":"B","r":1,"i":[["Meat loaf 150 g",0.33,1],["Eggs, medium",0.5,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Tuna omelette, garlic rice","m":"B","r":1,"i":[["Tuna flakes 155 g",0.25,1],["Eggs, medium",1,0],["Onion (per kg, from bag rate)",0.01,0],["Tomato (Kamatis)",0.02,0]],"t":["tipid","classic"],"g":""},{"n":"Pancit bihon guisado","m":"B","r":0,"i":[["Bihon 227 g",0.33,0],["Chicken Breast Fillet",0.03,1],["Cabbage (Repolyo)",0.05,0],["Carrots (Karot)",0.02,0],["Onion (per kg, from bag rate)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["classic"],"g":""},{"n":"Japanese dumplings, garlic rice","m":"B","r":1,"i":[["Homemade Pork Japanese Dumplings (16 pcs)",0.25,1],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic"],"g":""},{"n":"Sharkfin dumplings, garlic rice","m":"B","r":1,"i":[["Homemade Pork Sharkfin Dumplings (24 pcs)",0.17,1],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic"],"g":""},{"n":"Fried galunggong, garlic rice and tomato","m":"B","r":1,"i":[["Galunggong",0.08,1],["Tomato (Kamatis)",0.04,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Boiled kamote and egg","m":"B","r":0,"i":[["Sweet Potato (Kamote)",0.15,0],["Eggs, medium",1,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Ginataang halo-halo (bilo-bilo)","m":"B","r":0,"i":[["Glutinous Powder",0.08,0],["Coconut milk (gata) 400 ml",0.25,0],["Banana (Native)",0.06,0],["Sweet Potato (Kamote)",0.04,0]],"t":["probinsya","classic"],"g":""},{"n":"Pork nilaga","m":"L","r":1,"i":[["Pork Ribs",0.2,1],["Pork Bones",0.05,1],["Cabbage (Repolyo)",0.08,0],["Native Pechay",0.08,0],["Potato (Patatas)",0.08,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["classic"],"g":""},{"n":"Chicken curry","m":"L","r":1,"i":[["Chicken Leg Quarter",0.25,1],["Potato (Patatas)",0.08,0],["Carrots (Karot)",0.05,0],["Coconut milk (gata) 400 ml",0.25,0],["Curry powder small pack",0.17,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["fiesta","classic"],"g":""},{"n":"Chicken inasal-style (grilled)","m":"L","r":1,"i":[["Chicken Leg Quarter",0.25,1],["Lemon Grass (Tanglad)",0.01,0],["Calamansi",0.015,0],["Garlic (per kg, from bag rate)",0.01,0],["Tomato (Kamatis)",0.03,0],["Cucumber (Pipino)",0.04,0]],"t":["probinsya","classic"],"g":"Visayas"},{"n":"Pork binagoongan with talong","m":"L","r":1,"i":[["Pork Belly (Fresh)",0.18,1],["Bagoong alamang 250 g",0.1,0],["Eggplant (Talong)",0.08,0],["Tomato (Kamatis)",0.03,0],["Garlic (per kg, from bag rate)",0.008,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Beef caldereta (budget)","m":"L","r":1,"i":[["Beef Laman",0.15,1],["Potato (Patatas)",0.08,0],["Carrots (Karot)",0.05,0],["Bell Pepper Red & Green, Small",0.02,0],["Tomato Sauce (Small)",0.33,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["fiesta","classic"],"g":""},{"n":"Beef with broccoli","m":"L","r":1,"i":[["Beef Laman",0.13,1],["Broccoli, Uncleaned",0.1,0],["Carrots (Karot)",0.03,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["fiesta","classic"],"g":""},{"n":"Beef picadillo (giniling)","m":"L","r":1,"i":[["Ground Beef",0.13,1],["Potato (Patatas)",0.08,0],["Carrots (Karot)",0.05,0],["Tomato (Kamatis)",0.05,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic"],"g":""},{"n":"Paksiw na bangus","m":"L","r":1,"i":[["Bangus",0.25,1],["Eggplant (Talong)",0.05,0],["Bitter Gourd (Ampalaya, Long)",0.04,0],["Ginger (Luya)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Fried chicken wings with ginisang sitaw","m":"L","r":1,"i":[["Chicken Wings (Fresh)",0.22,1],["String Beans (Sitaw)",0.08,0],["Garlic (per kg, from bag rate)",0.008,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["classic"],"g":""},{"n":"Adobong balunbalunan (chicken gizzard)","m":"L","r":1,"i":[["Chicken Gizzard",0.15,1],["Potato (Patatas)",0.08,0],["Garlic (per kg, from bag rate)",0.012,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Pork igado (Ilocano)","m":"L","r":1,"i":[["Pork Igado",0.15,1],["Pork Liver",0.03,1],["Bell Pepper Red & Green, Small",0.02,0],["Carrots (Karot)",0.03,0],["Garlic (per kg, from bag rate)",0.01,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["probinsya","classic"],"g":"Ilocano"},{"n":"Pork BBQ with atchara","m":"L","r":1,"i":[["Pork BBQ (1 kg)",0.2,1],["Papaya, Green",0.06,0],["Carrots (Karot)",0.01,0]],"t":["fiesta","classic"],"g":""},{"n":"Ginataang kalabasa at sitaw with shrimp","m":"L","r":1,"i":[["Shrimps",0.07,1],["Pumpkin (Kalabasa)",0.15,0],["String Beans (Sitaw)",0.08,0],["Coconut milk (gata) 400 ml",0.25,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Adobong pusit","m":"L","r":1,"i":[["Squid (Kalawang)",0.2,1],["Tomato (Kamatis)",0.03,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.01,0]],"t":["classic"],"g":""},{"n":"Ginisang monggo with pork and malunggay","m":"L","r":1,"i":[["Dried monggo (mung beans)",0.07,0],["Pork Belly (Fresh)",0.06,1],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Tomato (Kamatis)",0.03,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Fish tinola (yellowfin) with sayote","m":"L","r":1,"i":[["Yellowfin Tuna, Small",0.22,1],["Chayote (Sayote)",0.15,0],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Ginger (Luya)",0.015,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Lechon belly roll with ensaladang talong","m":"L","r":1,"i":[["Lechon Belly Roll (1 kg)",0.16,1],["Eggplant (Talong)",0.08,0],["Tomato (Kamatis)",0.04,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["fiesta","tipid","classic"],"g":""},{"n":"Pancit canton fiesta (chicken)","m":"L","r":0,"i":[["Pancit Canton 227g",0.4,0],["Chicken Breast Fillet",0.1,1],["Cabbage (Repolyo)",0.06,0],["Carrots (Karot)",0.03,0],["Calamansi",0.01,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["fiesta","classic"],"g":""},{"n":"Tinolang manok (whole chicken)","m":"L","r":1,"i":[["Whole Chicken (Fresh)",0.25,1],["Papaya, Green",0.1,0],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Ginger (Luya)",0.015,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","classic"],"g":""},{"n":"Laswa with shrimp","m":"D","r":1,"i":[["Shrimps",0.03,1],["Pumpkin (Kalabasa)",0.08,0],["Lady Finger (Okra)",0.04,0],["String Beans (Sitaw)",0.04,0],["Spinach (Alugbati)",0.17,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":"Visayas"},{"n":"Sinabawang misua with patola","m":"D","r":1,"i":[["Misua 100 g",0.33,0],["Sponge Gourd (Patola)",0.1,0],["Ground Pork",0.03,1],["Onion (per kg, from bag rate)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya","classic"],"g":""},{"n":"Chicken sotanghon soup","m":"D","r":1,"i":[["Sotanghon 100 g",0.25,0],["Chicken Leg Quarter",0.06,1],["Cabbage (Repolyo)",0.04,0],["Carrots (Karot)",0.02,0],["Green Onion, Big Leaves (Leeks)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["classic"],"g":""},{"n":"Ginataang gulay with ground pork","m":"D","r":1,"i":[["Coconut milk (gata) 400 ml",0.25,0],["Pumpkin (Kalabasa)",0.12,0],["String Beans (Sitaw)",0.06,0],["Ground Pork",0.03,1],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Adobong kangkong with tofu","m":"D","r":1,"i":[["Water Spinach (Kangkong)",0.33,0],["Bean Curd (Tofu)",0.06,1],["Garlic (per kg, from bag rate)",0.01,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Fried tilapia with ensaladang talong","m":"D","r":1,"i":[["Tilapia",0.1,1],["Eggplant (Talong)",0.1,0],["Tomato (Kamatis)",0.04,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["tipid","classic"],"g":""},{"n":"Okoy (togue fritters)","m":"D","r":1,"i":[["Sprouted Monggo",0.08,0],["Eggs, medium",0.33,0],["All-Purpose Flour",0.05,0],["Carrots (Karot)",0.02,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Ginisang baguio beans with ground pork","m":"D","r":1,"i":[["Green Beans (Baguio Beans)",0.1,0],["Ground Pork",0.03,1],["Carrots (Karot)",0.02,0],["Onion (per kg, from bag rate)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["classic"],"g":""},{"n":"Halaan soup with malunggay","m":"D","r":1,"i":[["Halaan (Clams)",0.15,1],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Chayote (Sayote)",0.05,0],["Ginger (Luya)",0.01,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Tortang kalabasa","m":"D","r":1,"i":[["Pumpkin (Kalabasa)",0.1,0],["Eggs, medium",0.5,0],["All-Purpose Flour",0.03,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Fried tofu with tomato-cucumber salad","m":"D","r":1,"i":[["Bean Curd (Tofu)",0.12,1],["Tomato (Kamatis)",0.05,0],["Cucumber (Pipino)",0.05,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["tipid","classic"],"g":""},{"n":"Ginisang repolyo with corned beef","m":"D","r":1,"i":[["Cabbage (Repolyo)",0.1,0],["Corned beef 150 g",0.17,1],["Onion (per kg, from bag rate)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Sardinas with misua and patola","m":"D","r":1,"i":[["Sardines in tomato sauce 155 g",0.33,1],["Misua 100 g",0.25,0],["Sponge Gourd (Patola)",0.05,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid","classic"],"g":""},{"n":"Ginisang pechay with tuna","m":"D","r":1,"i":[["Tuna flakes 155 g",0.33,1],["Native Pechay",0.1,0],["Onion (per kg, from bag rate)",0.008,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["tipid","classic"],"g":""},{"n":"Light monggo soup with malunggay","m":"D","r":1,"i":[["Dried monggo (mung beans)",0.04,0],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Ground Pork",0.02,1],["Tomato (Kamatis)",0.02,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Ginisang sigarilyas with pork","m":"D","r":1,"i":[["Winged Beans (Sigarilyas)",0.08,0],["Pork Belly (Fresh)",0.03,1],["Tomato (Kamatis)",0.02,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","classic"],"g":""},{"n":"Tuyo, sinangag at kamatis","m":"B","r":1,"i":[["Tuyo (dried herring) 100 g",0.17,1],["Tomato (Kamatis)",0.05,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid"],"g":""},{"n":"Tinapa with sinangag and tomato","m":"B","r":1,"i":[["Tinapa (smoked fish) 2 pcs",0.17,1],["Tomato (Kamatis)",0.04,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya"],"g":""},{"n":"Bangsilog (daing na bangus, egg, sinangag)","m":"B","r":1,"i":[["Bangus",0.1,1],["Eggs, medium",0.5,0],["Garlic (per kg, from bag rate)",0.01,0]],"t":["classic","probinsya"],"g":""},{"n":"Fried dilis with egg and sinangag","m":"B","r":1,"i":[["Dried dilis 100 g",0.12,1],["Eggs, medium",0.5,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid"],"g":""},{"n":"Champorado with tuyo","m":"B","r":0,"i":[["Malagkit (glutinous rice)",0.05,0],["Tablea (cacao) 100 g",0.17,0],["Evaporated milk 370 ml",0.1,0],["Tuyo (dried herring) 100 g",0.08,1]],"t":["classic","probinsya"],"g":""},{"n":"Pritong saba (fried banana)","m":"B","r":0,"i":[["Banana (Native)",0.18,0],["Eggs, medium",0.25,0]],"t":["probinsya","tipid"],"g":""},{"n":"Pancit palabok","m":"B","r":0,"i":[["Pancit Palabok",0.25,0],["Palabok Sauce",0.25,0],["Ground Pork",0.03,1],["Eggs, medium",0.25,0],["Chicharon",0.1,0],["Calamansi",0.01,0]],"t":["classic","fiesta"],"g":""},{"n":"Ginisang bagoong with tomato, egg and sinangag","m":"B","r":1,"i":[["Bagoong alamang 250 g",0.08,0],["Tomato (Kamatis)",0.06,0],["Eggs, medium",0.5,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","tipid"],"g":""},{"n":"Batil patong (Tuguegarao)","m":"L","r":0,"i":[["Fresh miki noodles 500 g",0.2,0],["Ground Beef",0.08,1],["Eggs, medium",1,0],["Sprouted Monggo",0.05,0],["Cabbage (Repolyo)",0.04,0],["Onion (per kg, from bag rate)",0.015,0],["Calamansi",0.01,0]],"t":["probinsya","fiesta"],"g":"Cagayan"},{"n":"Pancit Cabagan","m":"L","r":0,"i":[["Fresh miki noodles 500 g",0.2,0],["Pork Liver",0.03,1],["Pork Belly (Fresh)",0.06,1],["Eggs, medium",0.5,0],["Cabbage (Repolyo)",0.05,0],["Carrots (Karot)",0.02,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","fiesta"],"g":"Isabela"},{"n":"Pork sisig","m":"L","r":1,"i":[["Pork Mask",0.17,1],["Pork Liver",0.03,1],["Onion (per kg, from bag rate)",0.03,0],["Calamansi",0.015,0],["Chili, Big (Sili Dynamite)",0.005,0],["Eggs, medium",0.33,0]],"t":["classic","probinsya"],"g":"Pampanga"},{"n":"Dinakdakan","m":"L","r":1,"i":[["Pork Mask",0.17,1],["Pork Liver",0.03,1],["Onion (per kg, from bag rate)",0.03,0],["Ginger (Luya)",0.01,0],["Calamansi",0.015,0]],"t":["probinsya"],"g":"Ilocano"},{"n":"Crispy pata with sawsawan","m":"L","r":1,"i":[["Pork Pata",0.3,1],["Garlic (per kg, from bag rate)",0.01,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["fiesta","classic"],"g":""},{"n":"Lechon kawali with KBL (kamatis, bagoong, lasona)","m":"L","r":1,"i":[["Pork Belly (Fresh)",0.2,1],["Tomato (Kamatis)",0.05,0],["Onion (per kg, from bag rate)",0.02,0],["Bagoong alamang 250 g",0.05,0]],"t":["probinsya"],"g":"Ilocano"},{"n":"Kare-kare (beef tail & tripe)","m":"L","r":1,"i":[["Beef Tail",0.15,1],["Beef Tripe",0.05,1],["String Beans (Sitaw)",0.06,0],["Taiwan Pechay (Bokchoy)",0.06,0],["Eggplant (Talong)",0.05,0],["Peanut butter 220 g",0.17,0],["Bagoong alamang 250 g",0.1,0]],"t":["fiesta","classic"],"g":""},{"n":"Bicol express","m":"L","r":1,"i":[["Pork Belly (Fresh)",0.18,1],["Coconut milk (gata) 400 ml",0.25,0],["Chili, Big (Sili Dynamite)",0.02,0],["Bagoong alamang 250 g",0.05,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya"],"g":"Bicol"},{"n":"Laing with pork","m":"L","r":1,"i":[["Taro Stem for Laing (Gabi)",0.1,0],["Coconut milk (gata) 400 ml",0.33,0],["Pork Belly (Fresh)",0.06,1],["Chili, Big (Sili Dynamite)",0.01,0],["Ginger (Luya)",0.008,0]],"t":["probinsya"],"g":"Bicol"},{"n":"Ginataang langka with pork","m":"L","r":1,"i":[["Langka, Cleaned",0.12,0],["Coconut milk (gata) 400 ml",0.25,0],["Pork Belly (Fresh)",0.07,1],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya"],"g":"Visayas"},{"n":"Chicken binakol (buko soup)","m":"L","r":1,"i":[["Whole Chicken (Fresh)",0.25,1],["Buko (Fresh)",0.17,0],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Ginger (Luya)",0.015,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya"],"g":"Visayas"},{"n":"Papaitan-style beef soup","m":"L","r":1,"i":[["Beef Internal Organs",0.15,1],["Beef Tripe",0.05,1],["Sili Leaves (Dahon ng Sili)",0.17,0],["Ginger (Luya)",0.015,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["probinsya"],"g":"Ilocano"},{"n":"La Paz-style batchoy","m":"L","r":0,"i":[["Fresh miki noodles 500 g",0.2,0],["Pork Liver",0.04,1],["Ground Pork",0.05,1],["Chicharon",0.1,0],["Eggs, medium",0.5,0],["Green Onion, Big Leaves (Leeks)",0.01,0]],"t":["probinsya"],"g":"Iloilo"},{"n":"Kinilaw na yellowfin with cucumber","m":"L","r":1,"i":[["Yellowfin Tuna, Sliced",0.15,1],["Cucumber (Pipino)",0.05,0],["Onion (per kg, from bag rate)",0.02,0],["Ginger (Luya)",0.01,0],["Calamansi",0.02,0]],"t":["probinsya"],"g":"Visayas"},{"n":"Pork pochero with saba","m":"L","r":1,"i":[["Pork Kasim",0.2,1],["Banana (Native)",0.1,0],["Potato (Patatas)",0.06,0],["Cabbage (Repolyo)",0.06,0],["Native Pechay",0.05,0],["Tomato Sauce (Small)",0.33,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["classic","fiesta"],"g":""},{"n":"Pork afritada","m":"L","r":1,"i":[["Pork Kasim",0.2,1],["Potato (Patatas)",0.08,0],["Carrots (Karot)",0.05,0],["Bell Pepper Red & Green, Small",0.02,0],["Tomato Sauce (Small)",0.33,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic","fiesta"],"g":""},{"n":"Bistek tagalog","m":"L","r":1,"i":[["Beef Laman",0.15,1],["Onion (per kg, from bag rate)",0.04,0],["Calamansi",0.02,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic"],"g":""},{"n":"Chicken adobo sa gata","m":"L","r":1,"i":[["Chicken Leg Quarter",0.25,1],["Coconut milk (gata) 400 ml",0.25,0],["Potato (Patatas)",0.06,0],["Garlic (per kg, from bag rate)",0.012,0]],"t":["probinsya","classic"],"g":""},{"n":"Sinigang na hipon","m":"L","r":1,"i":[["Shrimps",0.12,1],["Water Spinach (Kangkong)",0.33,0],["Radish (Labanos)",0.05,0],["String Beans (Sitaw)",0.04,0],["Tomato (Kamatis)",0.04,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["classic"],"g":""},{"n":"Bulalo-style beef soup","m":"L","r":1,"i":[["Beef Bone Marrow Sliced",0.25,1],["Beef Shanks Slice",0.08,1],["Cabbage (Repolyo)",0.08,0],["Native Pechay",0.06,0],["Potato (Patatas)",0.06,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["classic","fiesta"],"g":"Batangas"},{"n":"Fish escabeche (tilapia)","m":"L","r":1,"i":[["Tilapia",0.25,1],["Carrots (Karot)",0.03,0],["Bell Pepper Red & Green, Small",0.02,0],["Ginger (Luya)",0.01,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["classic","fiesta"],"g":""},{"n":"Inihaw na liempo with atchara","m":"L","r":1,"i":[["Pork Belly (Fresh)",0.2,1],["Papaya, Green",0.05,0],["Calamansi",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["classic","fiesta"],"g":""},{"n":"Paksiw na galunggong","m":"L","r":1,"i":[["Galunggong",0.25,1],["Eggplant (Talong)",0.05,0],["Bitter Gourd (Ampalaya, Long)",0.04,0],["Ginger (Luya)",0.01,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid"],"g":""},{"n":"Filipino-style spaghetti","m":"L","r":0,"i":[["Spaghetti Pasta 800g",0.17,0],["Tomato Sauce (Small)",0.4,0],["Tender Juicy Hotdog (1 kg)",0.05,1],["Ground Pork",0.06,1],["Eden Cheese, Small",0.1,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.008,0]],"t":["fiesta"],"g":""},{"n":"Sinampalukang manok","m":"L","r":1,"i":[["Chicken Leg Quarter",0.25,1],["Tomato (Kamatis)",0.04,0],["Water Spinach (Kangkong)",0.25,0],["Radish (Labanos)",0.04,0],["Ginger (Luya)",0.01,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya","classic"],"g":"Tagalog"},{"n":"Bopis with rice","m":"L","r":1,"i":[["Pork Lungs",0.12,1],["Pork Heart",0.06,1],["Carrots (Karot)",0.03,0],["Bell Pepper Red & Green, Small",0.02,0],["Onion (per kg, from bag rate)",0.015,0],["Garlic (per kg, from bag rate)",0.01,0]],"t":["probinsya","tipid"],"g":""},{"n":"Pinangat na isda (sour fish stew)","m":"L","r":1,"i":[["Sari",0.25,1],["Tomato (Kamatis)",0.06,0],["Ginger (Luya)",0.01,0],["Onion (per kg, from bag rate)",0.015,0]],"t":["probinsya"],"g":"Bicol"},{"n":"Inabraw (veg with bagoong)","m":"D","r":1,"i":[["Saluyot Leaves",0.08,0],["Pumpkin Flower/Leaves (Sabong ng Kalabasa)",0.17,0],["Lady Finger (Okra)",0.04,0],["String Beans (Sitaw)",0.04,0],["Bagoong monamon (fish) 250 g",0.05,0],["Galunggong",0.05,1]],"t":["probinsya"],"g":"Ilocano"},{"n":"Bulanglang (veg soup)","m":"D","r":1,"i":[["Pumpkin (Kalabasa)",0.08,0],["Lady Finger (Okra)",0.04,0],["String Beans (Sitaw)",0.04,0],["Spinach (Alugbati)",0.17,0],["Tomato (Kamatis)",0.04,0],["Ground Pork",0.02,1]],"t":["probinsya"],"g":"Batangas"},{"n":"Ginataang puso ng saging with tinapa","m":"D","r":1,"i":[["Heart of Banana (Puso ng Saging)",0.17,0],["Coconut milk (gata) 400 ml",0.25,0],["Tinapa (smoked fish) 2 pcs",0.1,1],["Onion (per kg, from bag rate)",0.01,0]],"t":["probinsya"],"g":"Visayas"},{"n":"Ginisang labong with pork","m":"D","r":1,"i":[["Bamboo Shoots (Labong)",0.12,0],["Pork Belly (Fresh)",0.04,1],["Moringa Leaves (Dahon ng Malunggay)",0.1,0],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya"],"g":"Ilocano"},{"n":"Talbos ng kamote salad with egg","m":"D","r":1,"i":[["Sweet Potato Leaves",0.17,0],["Tomato (Kamatis)",0.04,0],["Onion (per kg, from bag rate)",0.01,0],["Eggs, medium",0.5,1]],"t":["probinsya","tipid"],"g":""},{"n":"Utan Bisaya (veg soup)","m":"D","r":1,"i":[["Pumpkin (Kalabasa)",0.06,0],["String Beans (Sitaw)",0.04,0],["Moringa Leaves (Dahon ng Malunggay)",0.17,0],["Spinach (Alugbati)",0.1,0],["Sponge Gourd (Patola)",0.05,0],["Tinapa (smoked fish) 2 pcs",0.05,1]],"t":["probinsya","tipid"],"g":"Visayas"},{"n":"Pritong tuyo with kamatis at sibuyas","m":"D","r":1,"i":[["Tuyo (dried herring) 100 g",0.17,1],["Tomato (Kamatis)",0.06,0],["Onion (per kg, from bag rate)",0.02,0]],"t":["probinsya","tipid"],"g":""},{"n":"Ginisang sayote tops with ground pork","m":"D","r":1,"i":[["Chayote Shoot",0.17,0],["Ground Pork",0.03,1],["Garlic (per kg, from bag rate)",0.005,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid"],"g":""},{"n":"Adobong sitaw with pork","m":"D","r":1,"i":[["String Beans (Sitaw)",0.12,0],["Pork Belly (Fresh)",0.04,1],["Garlic (per kg, from bag rate)",0.01,0]],"t":["classic","tipid"],"g":""},{"n":"Ginisang dahon ng ampalaya with egg","m":"D","r":1,"i":[["Bitter Gourd Leaves (Dahon ng Ampalaya)",0.17,0],["Eggs, medium",0.5,1],["Tomato (Kamatis)",0.03,0],["Onion (per kg, from bag rate)",0.008,0]],"t":["probinsya","tipid"],"g":"Ilocano"},{"n":"Pesang isda (ginger fish soup)","m":"D","r":1,"i":[["Tilapia",0.12,1],["Napa Cabbage",0.08,0],["Ginger (Luya)",0.015,0],["Onion (per kg, from bag rate)",0.01,0]],"t":["classic"],"g":"Pampanga"},{"n":"Sinigang na galunggong","m":"D","r":1,"i":[["Galunggong",0.1,1],["Water Spinach (Kangkong)",0.33,0],["Radish (Labanos)",0.03,0],["Tomato (Kamatis)",0.03,0]],"t":["classic","tipid"],"g":""},{"n":"Ginataang tilapia with pechay","m":"D","r":1,"i":[["Tilapia",0.12,1],["Coconut milk (gata) 400 ml",0.25,0],["Native Pechay",0.05,0],["Ginger (Luya)",0.01,0]],"t":["probinsya"],"g":"Bicol"},{"n":"Dinengdeng na saluyot at labong","m":"D","r":1,"i":[["Saluyot Leaves",0.08,0],["Bamboo Shoots (Labong)",0.06,0],["Bagoong monamon (fish) 250 g",0.05,0],["Tuyo (dried herring) 100 g",0.06,1]],"t":["probinsya","tipid"],"g":"Ilocano"},{"n":"Kilawing puso ng saging","m":"D","r":1,"i":[["Heart of Banana (Puso ng Saging)",0.17,0],["Pork Belly (Fresh)",0.03,1],["Onion (per kg, from bag rate)",0.01,0],["Garlic (per kg, from bag rate)",0.005,0]],"t":["probinsya"],"g":"Visayas"}];
+const PANTRY = [["Cooking oil 1 L", 2], ["Soy sauce 1 L", 1], ["Cane vinegar 1 L", 1], ["Patis 350 ml", 1], ["Bagoong alamang 250 g", 1], ["Ground black pepper 50 g", 1], ["Laurel leaves small pack", 1], ["Iodized Salt", 1], ["Knorr Cubes – Pork", 10], ["Sinigang sa Sampalok", 4], ["Cornstarch", 1], ["White Sugar", 1]];
+</script>
+<script>
+"use strict";
+/* ============ Data & storage ============ */
+const KEY = "homeKitchenBudget.v1";
+const DEFAULT_CATS = ["Rice & Eggs","Pork","Chicken","Beef","Seafood","Processed Meats","Vegetables","Fruits","Condiments","Grocery","Canned Goods","Beverages","Household","Others"];
+let DB, storageOK = true;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function freshDB(){
+  return {
+    v:1,
+    cats: DEFAULT_CATS.slice(),
+    products: SEED.map(p => ({id:uid(), name:p[0], cat:p[1], unit:p[2], price:+p[3], src:p[4]==="est"?"est":"3F"})),
+    expenses: [],
+    budgets: [],
+    ui: {tab:"dash"}
+  };
+}
+function load(){
+  let raw = null;
+  try { raw = localStorage.getItem(KEY); } catch(e){ storageOK = false; }
+  if (raw) { try { DB = JSON.parse(raw); } catch(e){ DB = null; } }
+  if (!DB || !Array.isArray(DB.products)) DB = freshDB();
+  else SEED.forEach(p => { if (!DB.products.some(x => x.name === p[0])) DB.products.push({id:uid(), name:p[0], cat:p[1], unit:p[2], price:+p[3], src:p[4]==="est"?"est":"3F"}); });
+  DB.ui = DB.ui || {tab:"dash"};
+  DB.cats = DB.cats && DB.cats.length ? DB.cats : DEFAULT_CATS.slice();
+  save(true);
+}
+function save(silent){
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); storageOK = true; }
+  catch(e){ storageOK = false; }
+  document.getElementById("storageWarn").style.display = storageOK ? "none" : "block";
+}
+
+/* ============ Helpers ============ */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseD = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const today = () => iso(new Date());
+const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate()+n); return iso(d); };
+const diffDays = (a, b) => Math.round((parseD(b) - parseD(a)) / 864e5);
+function addMonths(s, n){
+  const d = parseD(s); const day = d.getDate();
+  const t = new Date(d.getFullYear(), d.getMonth()+n, 1);
+  const last = new Date(t.getFullYear(), t.getMonth()+1, 0).getDate();
+  t.setDate(Math.min(day, last)); return iso(t);
+}
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const fmtShort = s => { const d = parseD(s); return `${MON[d.getMonth()]} ${d.getDate()}`; };
+const fmtLong = s => { const d = parseD(s); return `${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; };
+const fmtRange = (a, b) => { const A = parseD(a), B = parseD(b);
+  return A.getFullYear() === B.getFullYear() ? `${fmtShort(a)} – ${fmtShort(b)}, ${B.getFullYear()}` : `${fmtShort(a)}, ${A.getFullYear()} – ${fmtShort(b)}, ${B.getFullYear()}`; };
+const peso = x => "₱" + (Math.round((+x||0)*100)/100).toLocaleString("en-PH",{minimumFractionDigits:2, maximumFractionDigits:2});
+const peso0 = x => "₱" + Math.round(+x||0).toLocaleString("en-PH");
+const pesoK = x => { x = +x||0; if (Math.abs(x) >= 1000) return "₱" + (x/1000).toFixed(x >= 10000 ? 0 : 1).replace(/\.0$/,"") + "k"; return "₱" + Math.round(x); };
+const qtyFmt = q => (Math.round(q*1000)/1000).toLocaleString("en-PH",{maximumFractionDigits:3});
+const total = e => (+e.qty||0) * (+e.price||0);
+const sum = (arr, f) => arr.reduce((a, x) => a + f(x), 0);
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("show"), 2200); }
+function findProduct(name){ const n = String(name||"").trim().toLowerCase(); return DB.products.find(p => p.name.toLowerCase() === n); }
+function download(name, text, type){
+  const blob = new Blob([text], {type});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const ICON = {
+  good:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>',
+  crit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/></svg>'
+};
+const STATUS_LABEL = {good:"On track", warn:"Watch spending", crit:"Over budget"};
+const badge = st => `<span class="badge ${st}">${ICON[st]}${STATUS_LABEL[st]}</span>`;
+
+/* ============ Budget logic ============ */
+function computeEnd(type, start, oldStart, oldEnd){
+  if (type === "weekly") return addDays(start, 6);
+  if (type === "biweekly") return addDays(start, 13);
+  if (type === "monthly") return addDays(addMonths(start, 1), -1);
+  if (oldStart && oldEnd) return addDays(start, diffDays(oldStart, oldEnd));
+  return addDays(start, 13);
+}
+const TYPE_LABEL = {weekly:"Weekly", biweekly:"Bi-weekly", monthly:"Monthly", custom:"Custom"};
+function budgetsSorted(){ return DB.budgets.slice().sort((a,b) => b.start.localeCompare(a.start)); }
+function currentBudget(){
+  const t = today();
+  const inNow = budgetsSorted().filter(b => b.start <= t && t <= b.end);
+  if (inNow.length) return inNow[0];
+  const past = budgetsSorted().filter(b => b.start <= t);
+  return past[0] || budgetsSorted().slice(-1)[0] || null;
+}
+function budgetName(b){ return (b.label ? b.label + " · " : "") + fmtRange(b.start, b.end); }
+function expensesIn(a, b){ return DB.expenses.filter(e => e.date >= a && e.date <= b); }
+function budgetStats(b){
+  const ex = expensesIn(b.start, b.end);
+  const spent = sum(ex, total);
+  const days = diffDays(b.start, b.end) + 1;
+  const t = today();
+  let elapsed = t < b.start ? 0 : t > b.end ? days : diffDays(b.start, t) + 1;
+  const daysLeft = t > b.end ? 0 : t < b.start ? days : days - elapsed + 1; // today counts as a day you can still spend
+  const pace = b.amount * elapsed / days;
+  const remaining = b.amount - spent;
+  const pct = b.amount ? spent / b.amount : 0;
+  const daily = b.amount / days;
+  const avg = elapsed ? spent / elapsed : 0;
+  const projected = elapsed ? avg * days : spent;
+  const safeDaily = daysLeft ? Math.max(0, remaining) / daysLeft : 0;
+  let status = "good";
+  if (spent > b.amount) status = "crit";
+  else if (pct >= 0.8 || (elapsed && spent > pace * 1.1)) status = "warn";
+  return {ex, spent, days, elapsed, daysLeft, pace, remaining, pct, daily, avg, projected, safeDaily, status, done: t > b.end, upcoming: t < b.start};
+}
+
+/* ============ Charts (hand-drawn SVG, offline) ============ */
+function niceTicks(max, count=4){
+  if (max <= 0) return [0, 1];
+  const raw = max / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].map(m => m*mag).find(s => s >= raw);
+  const ticks = []; for (let v = 0; v <= max + step*0.001; v += step) ticks.push(v);
+  if (ticks[ticks.length-1] < max) ticks.push(ticks[ticks.length-1] + step);
+  return ticks;
+}
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+/* Cumulative spending vs budget (line) */
+function drawCumulative(el, b, st){
+  const W = Math.max(280, el.clientWidth), H = 230, m = {l:48, r:14, t:14, b:26};
+  const days = st.days, iw = W-m.l-m.r, ih = H-m.t-m.b;
+  const perDay = new Array(days).fill(0);
+  st.ex.forEach(e => { const i = diffDays(b.start, e.date); if (i >= 0 && i < days) perDay[i] += total(e); });
+  const shown = st.upcoming ? 0 : st.elapsed;
+  const cum = []; let run = 0; for (let i = 0; i < shown; i++){ run += perDay[i]; cum.push(run); }
+  const ymax = Math.max(b.amount, run) * 1.06;
+  const ticks = niceTicks(ymax); const top = ticks[ticks.length-1];
+  const x = i => m.l + (days === 1 ? iw/2 : iw * i/(days-1));
+  const y = v => m.t + ih - ih * v/top;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Running total of spending compared with the budget">`;
+  ticks.forEach(t => { s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end">${pesoK(t)}</text>`; });
+  const step = Math.max(1, Math.ceil(days / Math.max(2, Math.floor(iw/56))));
+  for (let i = 0; i < days; i += step) s += `<text x="${x(i)}" y="${H-8}" text-anchor="middle">${fmtShort(addDays(b.start,i))}</text>`;
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--axis)"/>`;
+  // budget cap
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(b.amount)}" y2="${y(b.amount)}" stroke="var(--crit)" stroke-width="1.5" stroke-dasharray="2 3"/>`;
+  s += `<text x="${W-m.r}" y="${y(b.amount)-6}" text-anchor="end" style="fill:var(--ink-2);font-weight:600">Budget ${peso0(b.amount)}</text>`;
+  // pace line
+  s += `<line x1="${x(0)}" y1="${y(b.amount/days)}" x2="${x(days-1)}" y2="${y(b.amount)}" stroke="var(--pace)" stroke-width="2" stroke-dasharray="6 5"/>`;
+  if (cum.length){
+    const pts = cum.map((v,i) => `${x(i)},${y(v)}`).join(" ");
+    s += `<polyline points="${pts}" fill="none" stroke="var(--series-1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const li = cum.length-1;
+    s += `<circle cx="${x(li)}" cy="${y(cum[li])}" r="5" fill="var(--series-1)" stroke="var(--surface)" stroke-width="2"/>`;
+  }
+  s += `<line class="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink-2)" stroke-width="1" opacity="0"/>`;
+  s += `<circle class="hd" r="5" fill="var(--series-1)" stroke="var(--surface)" stroke-width="2" opacity="0"/>`;
+  s += `<rect class="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/>`;
+  s += `</svg><div class="tip"></div>`;
+  el.innerHTML = s;
+  const svg = el.querySelector("svg"), tip = el.querySelector(".tip"), xh = el.querySelector(".xh"), hd = el.querySelector(".hd");
+  const move = ev => {
+    const r = svg.getBoundingClientRect(); const px = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
+    let i = Math.round((px - m.l) / (iw/(Math.max(1,days-1)))); i = Math.max(0, Math.min(days-1, i));
+    const d = addDays(b.start, i), exp = b.amount*(i+1)/days;
+    xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("opacity", 1);
+    let body = `<b>${fmtLong(d)}</b>`;
+    if (i < cum.length){ hd.setAttribute("cx", x(i)); hd.setAttribute("cy", y(cum[i])); hd.setAttribute("opacity", 1);
+      body += `Spent this day: ${peso(perDay[i])}<br>Total so far: ${peso(cum[i])}<br>`; }
+    else { hd.setAttribute("opacity", 0); body += `Not yet reached<br>`; }
+    body += `Expected by this day: ${peso(exp)}`;
+    tip.innerHTML = body; tip.style.left = Math.min(Math.max(x(i), 90), W-90) + "px"; tip.style.top = (i < cum.length ? y(cum[i]) : y(exp)) + "px"; tip.style.opacity = 1;
+  };
+  const leave = () => { tip.style.opacity = 0; xh.setAttribute("opacity", 0); hd.setAttribute("opacity", 0); };
+  const hit = el.querySelector(".hit");
+  hit.addEventListener("mousemove", move); hit.addEventListener("touchstart", move, {passive:true}); hit.addEventListener("touchmove", move, {passive:true});
+  hit.addEventListener("mouseleave", leave); hit.addEventListener("touchend", () => setTimeout(leave, 1500));
+}
+
+/* Bars over time with optional reference line (daily or monthly) */
+function drawBars(el, items, opts={}){
+  // items: [{label, tipLabel, value, over}]
+  const W = Math.max(280, el.clientWidth), H = opts.height || 200, m = {l:48, r:10, t:16, b:26};
+  const iw = W-m.l-m.r, ih = H-m.t-m.b, n = Math.max(1, items.length);
+  const vmax = Math.max(opts.ref || 0, ...items.map(d => d.value), 1) * 1.08;
+  const ticks = niceTicks(vmax); const top = ticks[ticks.length-1];
+  const y = v => m.t + ih - ih*v/top, slot = iw/n, bw = Math.max(2, Math.min(36, slot - 2));
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"Spending bars")}">`;
+  ticks.forEach(t => { s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end">${pesoK(t)}</text>`; });
+  const step = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw/52))));
+  items.forEach((d, i) => {
+    const cx = m.l + slot*i + slot/2, h = Math.max(0, y(0) - y(d.value));
+    if (d.value > 0){
+      const r = Math.min(4, bw/2, h);
+      const x0 = cx - bw/2, y0 = y(d.value);
+      s += `<path d="M${x0},${y(0)} V${y0+r} Q${x0},${y0} ${x0+r},${y0} H${x0+bw-r} Q${x0+bw},${y0} ${x0+bw},${y0+r} V${y(0)} Z" fill="${d.over ? "var(--crit)" : "var(--series-1)"}"/>`;
+    }
+    s += `<rect class="hb" data-i="${i}" x="${m.l+slot*i}" y="${m.t}" width="${slot}" height="${ih}" fill="transparent"/>`;
+    if (i % step === 0) s += `<text x="${cx}" y="${H-8}" text-anchor="middle">${esc(d.label)}</text>`;
+  });
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--axis)"/>`;
+  if (opts.ref){
+    s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="var(--ink-2)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+    s += `<text x="${W-m.r}" y="${y(opts.ref)-6}" text-anchor="end" style="fill:var(--ink-2);font-weight:600">${esc(opts.refLabel||"")} ${peso0(opts.ref)}</text>`;
+  }
+  s += `</svg><div class="tip"></div>`;
+  el.innerHTML = s;
+  const tip = el.querySelector(".tip");
+  el.querySelectorAll(".hb").forEach(r => {
+    const show = () => { const i = +r.dataset.i, d = items[i];
+      tip.innerHTML = `<b>${esc(d.tipLabel||d.label)}</b>${peso(d.value)}${d.over ? "<br>Above daily budget" : ""}${d.extra ? "<br>"+esc(d.extra) : ""}`;
+      tip.style.left = Math.min(Math.max(m.l + slot*i + slot/2, 80), W-80) + "px"; tip.style.top = y(d.value) + "px"; tip.style.opacity = 1; r.setAttribute("fill","rgba(127,127,127,.08)"); };
+    const hide = () => { tip.style.opacity = 0; r.setAttribute("fill","transparent"); };
+    r.addEventListener("mouseenter", show); r.addEventListener("mouseleave", hide);
+    r.addEventListener("touchstart", show, {passive:true}); r.addEventListener("touchend", () => setTimeout(hide, 1500));
+  });
+}
+
+function categoryRows(ex){
+  const by = {}; ex.forEach(e => { by[e.cat] = (by[e.cat]||0) + total(e); });
+  const tot = sum(Object.values(by), v => v);
+  return Object.entries(by).sort((a,b) => b[1]-a[1]).map(([cat, v]) => ({cat, v, share: tot ? v/tot : 0}));
+}
+function categoryTable(ex){
+  const rows = categoryRows(ex); if (!rows.length) return `<div class="empty">No expenses yet.</div>`;
+  const max = rows[0].v;
+  return `<div class="tbl-wrap"><table><thead><tr><th>Category</th><th class="hide-sm" style="width:40%"></th><th class="r">Amount</th><th class="r">Share</th></tr></thead><tbody>${
+    rows.map(r => `<tr title="${esc(r.cat)}: ${peso(r.v)}"><td>${esc(r.cat)}</td><td class="bar-cell hide-sm"><div class="b" style="width:${Math.max(2, r.v/max*100)}%"></div></td><td class="r">${peso(r.v)}</td><td class="r">${(r.share*100).toFixed(1)}%</td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+function itemRows(ex){
+  const by = {};
+  ex.forEach(e => { const k = e.name.toLowerCase() + "|" + e.unit;
+    const o = by[k] || (by[k] = {name:e.name, cat:e.cat, unit:e.unit, qty:0, amt:0, n:0});
+    o.qty += +e.qty||0; o.amt += total(e); o.n++; });
+  return Object.values(by).sort((a,b) => b.amt - a.amt);
+}
+function priceWatch(ex){
+  return ex.map(e => { const p = findProduct(e.name); return p && p.unit === e.unit && +e.price > p.price + 0.004 ? {e, p, extra:(e.price - p.price)*e.qty} : null; })
+    .filter(Boolean).sort((a,b) => b.extra - a.extra);
+}
+
+/* ============ Views ============ */
+const app = document.getElementById("app");
+const UI = { dashBudget:null, exp:{range:"budget", budget:null, cat:"", q:""}, rep:{range:"budget", budget:null, from:"", to:"", cat:"", q:"", allItems:false}, prod:{cat:"", q:""} };
+
+function budgetOptions(sel){
+  return budgetsSorted().map(b => `<option value="${b.id}" ${b.id===sel?"selected":""}>${esc(budgetName(b))}</option>`).join("");
+}
+function catOptions(sel, withAll){
+  return (withAll ? `<option value="">All categories</option>` : "") + DB.cats.map(c => `<option ${c===sel?"selected":""}>${esc(c)}</option>`).join("");
+}
+
+function render(){
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === DB.ui.tab));
+  const t = DB.ui.tab;
+  document.getElementById("fab").style.display = t === "menu" ? "none" : "";
+  if (t === "dash") viewDash(); else if (t === "menu") viewMenu(); else if (t === "exp") viewExpenses(); else if (t === "reports") viewReports();
+  else if (t === "products") viewProducts(); else viewBudgets();
+  const cb = currentBudget();
+  $("#hdrSub").textContent = cb ? `Current budget: ${fmtRange(cb.start, cb.end)}` : "Offline · saved on this device";
+}
+
+function emptyBudgetCard(){
+  return `<div class="card"><h2>Set your first budget</h2>
+    <p class="hint">Enter a weekly, bi-weekly or monthly budget. The app will compare your actual expenses against it and warn you before you go over.</p>
+    <div class="row"><button class="btn primary" data-act="newBudget">Set a budget</button>
+    <button class="btn" data-act="tipidBudget">Use my 2-week Tipid meal plan (₱11,908.30, Nov 1–14, 2026)</button></div></div>`;
+}
+
+function viewDash(){
+  if (!DB.budgets.length){ app.innerHTML = emptyBudgetCard() + todayMenuCard() + recentCard(DB.expenses); return; }
+  let b = DB.budgets.find(x => x.id === UI.dashBudget) || currentBudget(); UI.dashBudget = b.id;
+  const st = budgetStats(b);
+  const fillColor = st.status === "crit" ? "var(--crit)" : st.status === "warn" ? "var(--warn)" : "var(--good)";
+  const pctTxt = (st.pct*100).toFixed(1) + "%";
+  const pacePos = Math.min(100, st.elapsed/st.days*100);
+  // alerts
+  const al = [];
+  if (st.status === "crit") al.push(["crit", `<b>Over budget by ${peso(-st.remaining)}.</b> You have spent ${peso(st.spent)} against a budget of ${peso(b.amount)}.`]);
+  if (!st.done && !st.upcoming && st.status !== "crit" && st.projected > b.amount) al.push(["warn", `<b>At this pace you will spend about ${peso(st.projected)}</b>, which is ${peso(st.projected - b.amount)} over budget. Keep spending under <b>${peso(st.safeDaily)} a day</b> for the remaining ${st.daysLeft} day${st.daysLeft===1?"":"s"}.`]);
+  if (st.status === "warn" && st.pct >= 0.8 && st.spent <= b.amount) al.push(["warn", `<b>${pctTxt} of the budget is used</b> with ${st.daysLeft} day${st.daysLeft===1?"":"s"} left.`]);
+  const tSpend = sum(st.ex.filter(e => e.date === today()), total);
+  if (!st.done && !st.upcoming && tSpend > st.daily) al.push(["warn", `<b>Today's spending is ${peso(tSpend)}</b>, above the daily budget of ${peso(st.daily)}.`]);
+  const pw = priceWatch(st.ex);
+  if (pw.length) al.push(["warn", `<b>${pw.length} purchase${pw.length===1?"":"s"} paid above your product list price</b>, ${peso(sum(pw, p=>p.extra))} extra in total. See Reports › Price watch.`]);
+  if (!al.length) al.push(["good", st.upcoming ? `<b>This budget starts on ${fmtLong(b.start)}.</b>` : st.done ? `<b>Finished within budget.</b> You saved ${peso(st.remaining)}.` : `<b>On track.</b> You can spend up to ${peso(st.safeDaily)} a day and still stay within budget.`]);
+
+  const top = itemRows(st.ex).slice(0, 5);
+  app.innerHTML = `
+  <div class="filters no-print"><label style="flex:3 1 260px">Budget period<select data-f="dashBudget">${budgetOptions(b.id)}</select></label>
+    <button class="btn" data-act="newBudget">New budget</button></div>
+  <div class="card">
+    <div class="hero">
+      <div><div class="k small muted" style="font-weight:600">${TYPE_LABEL[b.type]} budget${b.label?" · "+esc(b.label):""} · ${fmtRange(b.start,b.end)}</div>
+      <div class="big num">${peso(st.spent)}</div><div class="of">spent of <b class="num">${peso(b.amount)}</b> · ${pctTxt} used</div></div>
+      <div>${badge(st.status)}</div>
+    </div>
+    <div class="meter" role="img" aria-label="${pctTxt} of budget used; ${Math.round(pacePos)}% of the period has passed">
+      <div class="fill" style="width:${Math.min(100, st.pct*100)}%;background:${fillColor}"></div>
+      ${st.upcoming ? "" : `<div class="pace" style="left:calc(${pacePos}% - 1px)" title="Expected by today"></div>`}
+    </div>
+    <div class="meter-legend"><span>${st.upcoming ? "Not started yet" : st.done ? "Period finished" : `Day ${st.elapsed} of ${st.days} · black mark = expected by today (${peso(st.pace)})`}</span><span>${st.remaining >= 0 ? peso(st.remaining)+" left" : peso(-st.remaining)+" over"}</span></div>
+  </div>
+  ${todayMenuCard()}
+  <div class="tiles">
+    <div class="tile"><div class="k">${st.remaining >= 0 ? "Remaining" : "Over budget by"}</div><div class="v num" style="color:${st.remaining<0?"var(--crit-ink)":"inherit"}">${peso(Math.abs(st.remaining))}</div><div class="s">${st.daysLeft} day${st.daysLeft===1?"":"s"} left</div></div>
+    <div class="tile"><div class="k">Safe to spend per day</div><div class="v num">${peso(st.safeDaily)}</div><div class="s">Daily budget ${peso(st.daily)}</div></div>
+    <div class="tile"><div class="k">Average spent per day</div><div class="v num">${peso(st.avg)}</div><div class="s">${st.ex.length} purchase${st.ex.length===1?"":"s"}</div></div>
+    <div class="tile"><div class="k">Projected total</div><div class="v num" style="color:${st.projected>b.amount?"var(--crit-ink)":"inherit"}">${peso(st.projected)}</div><div class="s">${st.projected>b.amount ? "Over budget at this pace" : "Within budget at this pace"}</div></div>
+  </div>
+  <div class="card"><h2>Alerts</h2>${al.map(a => `<div class="alert ${a[0]}">${ICON[a[0]]}<div>${a[1]}</div></div>`).join("")}</div>
+  <div class="grid g2">
+    <div class="card"><h2>Running total vs budget</h2>
+      <div class="legend"><span><i class="sw" style="background:var(--series-1)"></i>Actual spending</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--pace) 0 6px,transparent 6px 10px)"></i>Expected pace</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--crit) 0 2px,transparent 2px 5px)"></i>Budget limit</span></div>
+      <div class="chart" id="chCum"></div></div>
+    <div class="card"><h2>Daily spending</h2>
+      <div class="legend"><span><i class="sw box" style="background:var(--series-1)"></i>Within daily budget</span><span><i class="sw box" style="background:var(--crit)"></i>Above daily budget</span></div>
+      <div class="chart" id="chDaily"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h2>Spending by category</h2>${categoryTable(st.ex)}</div>
+    <div class="card"><h2>Top 5 items</h2>${top.length ? `<div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Amount</th></tr></thead><tbody>${top.map(r => `<tr><td>${esc(r.name)}<div class="small muted">${esc(r.cat)}</div></td><td class="r">${qtyFmt(r.qty)} ${esc(r.unit)}</td><td class="r">${peso(r.amt)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No expenses in this period yet.</div>`}</div>
+  </div>
+  ${recentCard(st.ex)}`;
+  drawCumulative($("#chCum"), b, st);
+  const items = []; for (let i = 0; i < st.days; i++){ const d = addDays(b.start, i); const v = sum(st.ex.filter(e => e.date === d), total);
+    items.push({label: fmtShort(d), tipLabel: fmtLong(d), value: v, over: v > st.daily + 0.004}); }
+  drawBars($("#chDaily"), items, {ref: st.daily, refLabel: "Daily budget", aria: "Spending per day compared with the daily budget"});
+}
+
+function recentCard(ex){
+  const r = ex.slice().sort((a,b) => (b.date+b.id).localeCompare(a.date+a.id)).slice(0, 6);
+  return `<div class="card"><div class="row"><h2>Recent expenses</h2><span class="spacer"></span><button class="btn sm" data-tabgo="exp">See all</button></div>${
+    r.length ? r.map(expRow).join("") : `<div class="empty">No expenses yet. Tap <b>Add expense</b> to record what you bought.</div>`}</div>`;
+}
+function expRow(e){
+  return `<div class="list-item click" data-edit-exp="${e.id}" style="cursor:pointer"><div class="main"><div class="name">${esc(e.name)}</div>
+    <div class="meta">${fmtShort(e.date)} · ${esc(e.cat)} · ${qtyFmt(e.qty)} ${esc(e.unit)} × ${peso(e.price)}${e.note ? " · " + esc(e.note) : ""}</div></div>
+    <div class="amt num">${peso(total(e))}</div></div>`;
+}
+
+/* Range filter shared by Expenses and Reports */
+function rangeOf(f){
+  const t = today(), d = parseD(t);
+  switch (f.range){
+    case "budget": { const b = DB.budgets.find(x => x.id === f.budget) || currentBudget(); return b ? [b.start, b.end, b] : ["0000-01-01","9999-12-31"]; }
+    case "today": return [t, t];
+    case "thisweek": { const s = addDays(t, -((d.getDay()+6)%7)); return [s, addDays(s, 6)]; }
+    case "thismonth": return [iso(new Date(d.getFullYear(), d.getMonth(), 1)), iso(new Date(d.getFullYear(), d.getMonth()+1, 0))];
+    case "lastmonth": return [iso(new Date(d.getFullYear(), d.getMonth()-1, 1)), iso(new Date(d.getFullYear(), d.getMonth(), 0))];
+    case "last30": return [addDays(t, -29), t];
+    case "custom": return [f.from || "0000-01-01", f.to || "9999-12-31"];
+    default: return ["0000-01-01", "9999-12-31"];
+  }
+}
+function rangeSelect(f, key){
+  const opts = [["budget","Budget period"],["today","Today"],["thisweek","This week (Mon–Sun)"],["thismonth","This month"],["lastmonth","Last month"],["last30","Last 30 days"],["all","All time"],["custom","Custom dates"]];
+  let h = `<label>Date range<select data-f="${key}.range">${opts.map(o => `<option value="${o[0]}" ${f.range===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></label>`;
+  if (f.range === "budget" && DB.budgets.length) h += `<label style="flex:2 1 220px">Budget<select data-f="${key}.budget">${budgetOptions((DB.budgets.find(x=>x.id===f.budget)||currentBudget()).id)}</select></label>`;
+  if (f.range === "custom") h += `<label>From<input type="date" data-f="${key}.from" value="${f.from}"></label><label>To<input type="date" data-f="${key}.to" value="${f.to}"></label>`;
+  return h;
+}
+function applyFilters(f){
+  const [a, b] = rangeOf(f); const q = f.q.trim().toLowerCase();
+  return DB.expenses.filter(e => e.date >= a && e.date <= b && (!f.cat || e.cat === f.cat) && (!q || (e.name + " " + (e.note||"")).toLowerCase().includes(q)));
+}
+
+function viewExpenses(){
+  const f = UI.exp; const ex = applyFilters(f).sort((a,b) => (b.date+b.id).localeCompare(a.date+a.id));
+  const groups = {}; ex.forEach(e => (groups[e.date] = groups[e.date] || []).push(e));
+  app.innerHTML = `<div class="filters">${rangeSelect(f, "exp")}
+    <label>Category<select data-f="exp.cat">${catOptions(f.cat, true)}</select></label>
+    <label style="flex:2 1 180px">Search<input type="search" data-f="exp.q" value="${esc(f.q)}" placeholder="Item or note"></label></div>
+  <div class="card"><div class="row"><h2>${ex.length} expense${ex.length===1?"":"s"}</h2><span class="spacer"></span><b class="num" style="font-size:18px">${peso(sum(ex,total))}</b></div>
+  ${ex.length ? Object.keys(groups).map(d => `<div class="date-head"><span>${fmtLong(d)}</span><span class="num">${peso(sum(groups[d],total))}</span></div>${groups[d].map(expRow).join("")}`).join("") : `<div class="empty">No expenses match these filters.</div>`}</div>`;
+}
+
+function viewReports(){
+  const f = UI.rep; const ex = applyFilters(f); const [a, bEnd, bud] = rangeOf(f);
+  const spent = sum(ex, total);
+  const dates = ex.map(e => e.date).sort();
+  const span = f.range === "all" || f.range === "custom" && (!f.from || !f.to) ? (dates.length ? diffDays(dates[0], dates[dates.length-1]) + 1 : 0) : diffDays(a, bEnd) + 1;
+  const items = itemRows(ex); const pw = priceWatch(ex);
+  const shownItems = f.allItems ? items : items.slice(0, 15);
+  let compare = "";
+  if (bud && f.range === "budget" && !f.cat && !f.q){ const st = budgetStats(bud);
+    compare = `<div class="tile"><div class="k">Budget</div><div class="v num">${peso(bud.amount)}</div><div class="s">${badge(st.status)}</div></div>
+      <div class="tile"><div class="k">${st.remaining>=0?"Under budget by":"Over budget by"}</div><div class="v num" style="color:${st.remaining<0?"var(--crit-ink)":"var(--good-ink)"}">${peso(Math.abs(st.remaining))}</div><div class="s">${(st.pct*100).toFixed(1)}% used</div></div>`; }
+  // time series
+  let bars = [], byMonth = span > 62;
+  if (ex.length){
+    if (byMonth){ const m = {}; ex.forEach(e => { const k = e.date.slice(0,7); m[k] = (m[k]||0) + total(e); });
+      const keys = Object.keys(m).sort(); let k = keys[0]; const end = keys[keys.length-1];
+      while (k <= end){ const [y, mo] = k.split("-").map(Number); bars.push({label: MON[mo-1] + " " + String(y).slice(2), tipLabel: MON[mo-1] + " " + y, value: m[k]||0}); k = iso(new Date(y, mo, 1)).slice(0,7); }
+    } else { const s = f.range === "all" || (f.range==="custom" && (!f.from||!f.to)) ? dates[0] : a; const n = span;
+      for (let i = 0; i < n; i++){ const d = addDays(s, i); bars.push({label: fmtShort(d), tipLabel: fmtLong(d), value: sum(ex.filter(e=>e.date===d), total)}); } }
+  }
+  const hist = budgetsSorted().map(b => ({b, st: budgetStats(b)}));
+  app.innerHTML = `<div class="filters">${rangeSelect(f, "rep")}
+    <label>Category<select data-f="rep.cat">${catOptions(f.cat, true)}</select></label>
+    <label style="flex:2 1 160px">Search<input type="search" data-f="rep.q" value="${esc(f.q)}" placeholder="Item or note"></label>
+    <button class="btn" data-act="csv">Export CSV</button><button class="btn" data-act="print">Print</button></div>
+  <div class="small muted" style="margin:-6px 0 12px">Showing ${a.startsWith("0000") ? (dates.length ? fmtRange(dates[0], dates[dates.length-1]) : "all dates") : fmtRange(a, bEnd)}${f.cat?" · "+esc(f.cat):""}${f.q?" · “"+esc(f.q)+"”":""}</div>
+  <div class="tiles">
+    <div class="tile"><div class="k">Total spent</div><div class="v num">${peso(spent)}</div><div class="s">${ex.length} purchase${ex.length===1?"":"s"}</div></div>
+    <div class="tile"><div class="k">Average per day</div><div class="v num">${peso(span ? spent/span : 0)}</div><div class="s">over ${span} day${span===1?"":"s"}</div></div>
+    ${compare}
+  </div>
+  <div class="card"><h2>Spending over time</h2><p class="hint">${byMonth ? "Total per month" : "Total per day"}. Hover or tap a bar for the amount.</p><div class="chart" id="chRep">${ex.length ? "" : `<div class="empty">No data for these filters.</div>`}</div></div>
+  <div class="grid g2">
+    <div class="card"><h2>Spending by category</h2>${categoryTable(ex)}</div>
+    <div class="card"><h2>Budget history</h2><p class="hint">Every budget you set, compared with what was actually spent.</p>${hist.length ? `<div class="tbl-wrap"><table><thead><tr><th>Period</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Difference</th><th>Status</th></tr></thead><tbody>${
+      hist.map(({b, st}) => `<tr><td>${esc(fmtRange(b.start,b.end))}<div class="small muted">${TYPE_LABEL[b.type]}${b.label?" · "+esc(b.label):""}</div></td><td class="r">${peso(b.amount)}</td><td class="r">${peso(st.spent)}</td><td class="r" style="color:${st.remaining<0?"var(--crit-ink)":"var(--good-ink)"}">${st.remaining<0?"+":"−"}${peso(Math.abs(st.remaining))}</td><td>${badge(st.status)}</td></tr>`).join("")}</tbody></table></div><p class="small muted">Difference: − means under budget, + means over budget.</p>` : `<div class="empty">No budgets yet.</div>`}</div>
+  </div>
+  <div class="card"><div class="row"><h2>By item</h2><span class="spacer"></span>${items.length > 15 ? `<button class="btn sm" data-act="toggleItems">${f.allItems ? "Show top 15" : "Show all " + items.length}</button>` : ""}</div>
+    <p class="hint">What you bought most, by amount spent.</p>${items.length ? `<div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r hide-sm">Times</th><th class="r hide-sm">Avg price</th><th class="r">Total</th></tr></thead><tbody>${
+    shownItems.map(r => `<tr><td>${esc(r.name)}<div class="small muted">${esc(r.cat)}</div></td><td class="r">${qtyFmt(r.qty)} ${esc(r.unit)}</td><td class="r hide-sm">${r.n}</td><td class="r hide-sm">${peso(r.qty ? r.amt/r.qty : 0)}</td><td class="r">${peso(r.amt)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No items.</div>`}</div>
+  <div class="card"><h2>Price watch</h2><p class="hint">Purchases where you paid more than the price in your product list.</p>${pw.length ? `<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Item</th><th class="r">Paid</th><th class="r">List price</th><th class="r">Extra cost</th></tr></thead><tbody>${
+    pw.map(p => `<tr class="click" data-edit-exp="${p.e.id}"><td>${fmtShort(p.e.date)}</td><td>${esc(p.e.name)}</td><td class="r">${peso(p.e.price)}/${esc(p.e.unit)}</td><td class="r">${peso(p.p.price)}</td><td class="r" style="color:var(--crit-ink)">${peso(p.extra)}</td></tr>`).join("")}</tbody></table></div><p class="small"><b>Total extra paid: ${peso(sum(pw,p=>p.extra))}</b></p>` : `<div class="alert good">${ICON.good}<div>No purchases above list price for these filters.</div></div>`}</div>`;
+  if (ex.length) drawBars($("#chRep"), bars, {aria: "Spending over time", height: 210});
+}
+
+function viewProducts(){
+  const f = UI.prod; const q = f.q.trim().toLowerCase();
+  const list = DB.products.filter(p => (!f.cat || p.cat === f.cat) && (!q || p.name.toLowerCase().includes(q)))
+    .sort((a,b) => DB.cats.indexOf(a.cat) - DB.cats.indexOf(b.cat) || a.name.localeCompare(b.name));
+  let lastCat = null;
+  app.innerHTML = `<div class="filters"><label>Category<select data-f="prod.cat">${catOptions(f.cat, true)}</select></label>
+    <label style="flex:2 1 200px">Search<input type="search" data-f="prod.q" value="${esc(f.q)}" placeholder="Search products"></label>
+    <button class="btn primary" data-act="newProduct">Add product</button></div>
+  <div class="card"><h2>${list.length} product${list.length===1?"":"s"}</h2><p class="hint">Prices preloaded from the 3F Meatshop price list. Items marked <span class="tag">est.</span> are market estimates and <span class="tag mine">mine</span> are products you added. Tap a product to edit its price; tap <b>+</b> to record a purchase.</p>
+  ${list.length ? `<div class="tbl-wrap"><table><thead><tr><th>Product</th><th class="hide-sm">Unit</th><th class="r">Price</th><th style="width:44px"></th></tr></thead><tbody>${list.map(p => {
+    const head = p.cat !== lastCat ? `<tr><td colspan="4" style="font-weight:700;color:var(--ink-2);padding-top:16px;font-size:12px;text-transform:uppercase;letter-spacing:.5px">${esc(p.cat)}</td></tr>` : ""; lastCat = p.cat;
+    return head + `<tr class="click" data-edit-prod="${p.id}"><td>${esc(p.name)}${p.src==="mine"?'<span class="tag mine">mine</span>':p.src==="est"?'<span class="tag">est.</span>':""}</td><td class="hide-sm">${esc(p.unit)}</td><td class="r">${peso(p.price)}<span class="small muted">/${esc(p.unit)}</span></td><td><button class="icon-btn" data-buy="${p.id}" aria-label="Record purchase of ${esc(p.name)}">${ICON.plus}</button></td></tr>`; }).join("")}</tbody></table></div>` : `<div class="empty">No products found. <button class="btn sm primary" data-act="newProduct">Add product</button></div>`}</div>`;
+}
+
+function viewBudgets(){
+  const list = budgetsSorted();
+  app.innerHTML = `<div class="card"><div class="row"><h2>Budgets</h2><span class="spacer"></span><button class="btn primary" data-act="newBudget">Set a budget</button></div>
+    <p class="hint">Set a weekly, bi-weekly or monthly budget. Use <b>Repeat</b> to start the next period with the same amount.</p>
+    ${list.length ? `<div class="tbl-wrap"><table><thead><tr><th>Period</th><th class="r">Budget</th><th class="r">Spent</th><th class="r hide-sm">Used</th><th>Status</th><th></th></tr></thead><tbody>${list.map(b => { const st = budgetStats(b);
+      return `<tr><td><b>${esc(fmtRange(b.start,b.end))}</b><div class="small muted">${TYPE_LABEL[b.type]} · ${st.days} days${b.label?" · "+esc(b.label):""}</div></td><td class="r">${peso(b.amount)}</td><td class="r">${peso(st.spent)}</td><td class="r hide-sm">${(st.pct*100).toFixed(0)}%</td><td>${badge(st.status)}</td>
+      <td style="white-space:nowrap"><button class="icon-btn" data-edit-bud="${b.id}" aria-label="Edit budget">${ICON.edit}</button><button class="icon-btn" data-repeat-bud="${b.id}" aria-label="Repeat for next period" title="Repeat for next period">${ICON.repeat}</button></td></tr>`; }).join("")}</tbody></table></div>`
+    : `<div class="row" style="margin-top:8px"><button class="btn" data-act="tipidBudget">Use my 2-week Tipid meal plan (₱11,908.30, Nov 1–14, 2026)</button></div>`}
+  </div>
+  <div class="card"><h2>Backup &amp; data</h2><p class="hint">Your data is saved only in this browser on this device. Download a backup regularly, and use Restore to move your data to another phone or computer.</p>
+    <div class="row"><button class="btn" data-act="backup">Download backup</button><button class="btn" data-act="restore">Restore from backup</button><button class="btn" data-act="csvAll">Export all expenses (CSV)</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn" data-act="resetPrices">Reset preloaded prices to 3F list</button><button class="btn danger" data-act="clearAll">Delete all data</button></div>
+    <p class="small muted" style="margin-top:10px">${DB.products.length} products · ${DB.expenses.length} expenses · ${DB.budgets.length} budgets</p></div>`;
+}
+
+/* ============ Dialogs ============ */
+let editingExp = null, editingProd = null, editingBud = null;
+function fillProductList(){ $("#dlProducts").innerHTML = DB.products.map(p => `<option value="${esc(p.name)}">${esc(p.cat)} · ${peso(p.price)}/${esc(p.unit)}</option>`).join(""); }
+
+function openExpense(e, preset){
+  editingExp = e || null; fillProductList();
+  const f = $("#fExp"); f.reset();
+  f.category.innerHTML = catOptions(e ? e.cat : (preset && preset.cat) || "Others");
+  $("#dlgExpTitle").textContent = e ? "Edit expense" : "Add expense";
+  f.date.value = e ? e.date : (preset && preset.date) || today();
+  f.name.value = e ? e.name : (preset && preset.name) || "";
+  f.qty.value = e ? e.qty : 1;
+  f.unit.value = e ? e.unit : (preset && preset.unit) || "";
+  f.price.value = e ? e.price : (preset && preset.price != null ? preset.price : "");
+  f.note.value = e ? (e.note || "") : (preset && preset.note) || "";
+  $("#btnExpDelete").hidden = !e; $("#btnExpAgain").hidden = !!e;
+  expSync(false); $("#dlgExp").showModal();
+  if (!e && !(preset && preset.name)) setTimeout(() => f.name.focus(), 50); else if (!e) setTimeout(() => f.qty.select(), 50);
+}
+function expSync(fromName){
+  const f = $("#fExp"); const p = findProduct(f.name.value);
+  if (fromName && p){ f.category.value = p.cat; f.unit.value = p.unit; f.price.value = p.price; }
+  $("#chkNewWrap").hidden = !!p || !f.name.value.trim();
+  const priceDiff = p && f.price.value !== "" && Math.abs(+f.price.value - p.price) > 0.004;
+  $("#chkPriceWrap").hidden = !priceDiff;
+  if (priceDiff) $("#chkPriceTxt").textContent = `Update "${p.name}" price from ${peso(p.price)} to ${peso(+f.price.value)}`;
+  $("#expTotal").textContent = peso((+f.qty.value||0) * (+f.price.value||0));
+}
+function saveExpense(again){
+  const f = $("#fExp"); if (!f.reportValidity()) return false;
+  const rec = {date:f.date.value, name:f.name.value.trim(), cat:f.category.value, unit:f.unit.value.trim(), qty:+f.qty.value, price:+f.price.value, note:f.note.value.trim()};
+  let p = findProduct(rec.name);
+  if (!p && f.saveProduct.checked){ p = {id:uid(), name:rec.name, cat:rec.cat, unit:rec.unit, price:rec.price, src:"mine"}; DB.products.push(p); }
+  else if (p && !$("#chkPriceWrap").hidden && f.updatePrice.checked){ p.price = rec.price; }
+  if (editingExp) Object.assign(editingExp, rec); else DB.expenses.push(Object.assign({id:uid()}, rec));
+  save(); toast(editingExp ? "Expense updated" : `Saved ${peso(rec.qty*rec.price)}`);
+  if (again){ const keep = {date: rec.date, note: rec.note}; editingExp = null; openExpense(null, keep); }
+  else $("#dlgExp").close();
+  render(); return true;
+}
+
+function openProduct(p){
+  editingProd = p || null; const f = $("#fProd"); f.reset();
+  f.category.innerHTML = catOptions(p ? p.cat : (UI.prod.cat || "Canned Goods"));
+  $("#dlgProdTitle").textContent = p ? "Edit product" : "Add product";
+  if (p){ f.name.value = p.name; f.unit.value = p.unit; f.price.value = p.price; }
+  $("#btnProdDelete").hidden = !p; $("#dlgProd").showModal(); if (!p) setTimeout(() => f.name.focus(), 50);
+}
+function saveProduct(){
+  const f = $("#fProd"); if (!f.reportValidity()) return;
+  const nc = f.newcat.value.trim();
+  if (nc && !DB.cats.includes(nc)) DB.cats.splice(DB.cats.length - 1, 0, nc);
+  const rec = {name:f.name.value.trim(), cat: nc || f.category.value, unit:f.unit.value.trim(), price:+f.price.value};
+  const dup = findProduct(rec.name);
+  if (dup && dup !== editingProd){ alert("A product with this name already exists."); return; }
+  if (editingProd) Object.assign(editingProd, rec); else DB.products.push(Object.assign({id:uid(), src:"mine"}, rec));
+  save(); $("#dlgProd").close(); toast("Product saved"); render();
+}
+
+function openBudget(b, preset){
+  editingBud = b || null; const f = $("#fBud"); f.reset();
+  const src = b || preset || {type:"weekly", start:today(), amount:""};
+  f.type.value = src.type; f.start.value = src.start; f.amount.value = src.amount ?? "";
+  f.end.value = src.end || computeEnd(src.type, src.start); f.label.value = src.label || "";
+  $("#dlgBudTitle").textContent = b ? "Edit budget" : "Set a budget";
+  $("#btnBudDelete").hidden = !b; budSync(); $("#dlgBud").showModal();
+}
+function budSync(changed){
+  const f = $("#fBud");
+  if (changed && f.type.value !== "custom" && f.start.value) f.end.value = computeEnd(f.type.value, f.start.value);
+  f.end.readOnly = f.type.value !== "custom";
+  if (f.start.value && f.end.value && f.end.value >= f.start.value){
+    const days = diffDays(f.start.value, f.end.value) + 1, amt = +f.amount.value || 0;
+    $("#budInfo").textContent = `${fmtRange(f.start.value, f.end.value)} · ${days} days${amt ? ` · ${peso(amt/days)} per day · ${peso(amt/days*7)} per week` : ""}`;
+  } else $("#budInfo").textContent = "End date must be on or after the start date.";
+}
+function saveBudget(){
+  const f = $("#fBud"); if (!f.reportValidity()) return;
+  if (f.end.value < f.start.value){ alert("End date must be on or after the start date."); return; }
+  const rec = {type:f.type.value, start:f.start.value, end:f.end.value, amount:+f.amount.value, label:f.label.value.trim()};
+  const overlap = DB.budgets.find(x => x !== editingBud && x.start <= rec.end && rec.start <= x.end);
+  if (editingBud) Object.assign(editingBud, rec); else { const nb = Object.assign({id:uid()}, rec); DB.budgets.push(nb); UI.dashBudget = nb.id; }
+  save(); $("#dlgBud").close(); toast(overlap ? "Saved. Note: this overlaps another budget period." : "Budget saved"); render();
+}
+
+/* ============ Events ============ */
+document.querySelector("nav.tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (!b) return; DB.ui.tab = b.dataset.tab; save(); render(); window.scrollTo(0,0); });
+$("#fab").addEventListener("click", () => openExpense());
+document.querySelectorAll("dialog [data-close]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
+
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-act],[data-tabgo],[data-edit-exp],[data-edit-prod],[data-buy],[data-edit-bud],[data-repeat-bud]"); if (!t) return;
+  if (t.dataset.buy){ e.stopPropagation(); const p = DB.products.find(x => x.id === t.dataset.buy); openExpense(null, {name:p.name, cat:p.cat, unit:p.unit, price:p.price}); return; }
+  if (t.dataset.tabgo){ DB.ui.tab = t.dataset.tabgo; save(); render(); window.scrollTo(0,0); return; }
+  if (t.dataset.editExp){ openExpense(DB.expenses.find(x => x.id === t.dataset.editExp)); return; }
+  if (t.dataset.editProd){ openProduct(DB.products.find(x => x.id === t.dataset.editProd)); return; }
+  if (t.dataset.editBud){ openBudget(DB.budgets.find(x => x.id === t.dataset.editBud)); return; }
+  if (t.dataset.repeatBud){ const b = DB.budgets.find(x => x.id === t.dataset.repeatBud); const s = addDays(b.end, 1);
+    openBudget(null, {type:b.type, start:s, end: computeEnd(b.type, s, b.start, b.end), amount:b.amount, label:""}); return; }
+  const a = t.dataset.act;
+  if (a === "newBudget") openBudget();
+  else if (a === "tipidBudget") openBudget(null, {type:"biweekly", start:"2026-11-01", end:"2026-11-14", amount:11908.30, label:"Tipid meal plan"});
+  else if (a === "newProduct") openProduct();
+  else if (a === "toggleItems"){ UI.rep.allItems = !UI.rep.allItems; render(); }
+  else if (a === "print") window.print();
+  else if (a === "csv") exportCSV(applyFilters(UI.rep));
+  else if (a === "csvAll") exportCSV(DB.expenses);
+  else if (a === "backup") download(`kitchen-budget-backup-${today()}.json`, JSON.stringify(DB, null, 1), "application/json");
+  else if (a === "restore") $("#fileRestore").click();
+  else if (a === "resetPrices"){ if (!confirm("Reset the prices of preloaded products to the 3F price list? Your own products and expenses are kept.")) return;
+    SEED.forEach(s => { const p = DB.products.find(x => x.name === s[0] && x.src !== "mine"); if (p){ p.price = +s[3]; p.unit = s[2]; } else DB.products.push({id:uid(), name:s[0], cat:s[1], unit:s[2], price:+s[3], src:s[4]==="est"?"est":"3F"}); });
+    save(); toast("Prices reset"); render(); }
+  else if (a === "clearAll"){ if (!confirm("Delete ALL budgets, expenses and your own products from this device? Download a backup first if unsure.")) return;
+    DB = freshDB(); DB.ui.tab = "budgets"; save(); toast("All data deleted"); render(); }
+});
+app.addEventListener("input", e => { const k = e.target.dataset.f; if (!k || e.target.type !== "search") return; setF(k, e.target.value); clearTimeout(app._t); app._t = setTimeout(() => { const pos = e.target.selectionStart; render(); const el = app.querySelector(`[data-f="${k}"]`); if (el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(_){} } }, 250); });
+app.addEventListener("change", e => { const k = e.target.dataset.f; if (!k || e.target.type === "search") return; setF(k, e.target.value); render(); });
+function setF(k, v){ if (k === "dashBudget"){ UI.dashBudget = v; return; } const [g, f] = k.split("."); UI[g][f] = v; if (f === "range") UI[g].allItems = false; }
+
+const fExp = $("#fExp");
+fExp.name.addEventListener("input", () => expSync(true));
+fExp.name.addEventListener("change", () => expSync(true));
+["qty","price"].forEach(n => fExp[n].addEventListener("input", () => expSync(false)));
+fExp.addEventListener("submit", ev => { ev.preventDefault(); saveExpense(false); });
+$("#btnExpAgain").addEventListener("click", () => saveExpense(true));
+$("#btnExpDelete").addEventListener("click", () => { if (!confirm("Delete this expense?")) return; DB.expenses = DB.expenses.filter(x => x !== editingExp); save(); $("#dlgExp").close(); toast("Expense deleted"); render(); });
+
+$("#fProd").addEventListener("submit", ev => { ev.preventDefault(); saveProduct(); });
+$("#btnProdDelete").addEventListener("click", () => { if (!confirm("Delete this product? Past expenses stay.")) return; DB.products = DB.products.filter(x => x !== editingProd); save(); $("#dlgProd").close(); toast("Product deleted"); render(); });
+
+const fBud = $("#fBud");
+fBud.type.addEventListener("change", () => budSync(true));
+fBud.start.addEventListener("change", () => budSync(true));
+fBud.end.addEventListener("change", () => budSync(false));
+fBud.amount.addEventListener("input", () => budSync(false));
+fBud.addEventListener("submit", ev => { ev.preventDefault(); saveBudget(); });
+$("#btnBudDelete").addEventListener("click", () => { if (!confirm("Delete this budget? Expenses are kept.")) return; DB.budgets = DB.budgets.filter(x => x !== editingBud); if (UI.dashBudget === editingBud.id) UI.dashBudget = null; save(); $("#dlgBud").close(); toast("Budget deleted"); render(); });
+
+$("#fileRestore").addEventListener("change", ev => {
+  const file = ev.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => { try { const d = JSON.parse(r.result);
+      if (!Array.isArray(d.products) || !Array.isArray(d.expenses) || !Array.isArray(d.budgets)) throw new Error("bad");
+      if (!confirm(`Restore this backup (${d.expenses.length} expenses, ${d.budgets.length} budgets)? It replaces the data on this device.`)) return;
+      DB = d; DB.ui = DB.ui || {tab:"dash"}; DB.cats = DB.cats || DEFAULT_CATS.slice(); UI.dashBudget = null; save(); toast("Backup restored"); render();
+    } catch(_){ alert("This file is not a valid Home Kitchen Budget backup."); } finally { ev.target.value = ""; } };
+  r.readAsText(file);
+});
+
+function exportCSV(rows){
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const lines = [["Date","Item","Category","Qty","Unit","Price per unit","Total","Note"].join(",")]
+    .concat(rows.slice().sort((a,b) => a.date.localeCompare(b.date)).map(e => [e.date, q(e.name), q(e.cat), e.qty, q(e.unit), (+e.price).toFixed(2), total(e).toFixed(2), q(e.note)].join(",")));
+  download(`kitchen-expenses-${today()}.csv`, "﻿" + lines.join("\r\n"), "text/csv");
+}
+
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (DB.ui.tab === "dash" || DB.ui.tab === "reports") render(); }, 200); });
+
+/* ============ Menu plan: draft → approved ============ */
+const MEAL_NAME = {B:"Breakfast", L:"Lunch", D:"Dinner"};
+const SIZE = {light:0.55, medium:0.75, heavy:1};               // food amount relative to a heavy meal
+const SIZE_LABEL = {light:"Light", medium:"Medium", heavy:"Heavy"};
+const NATIVE = {B:"light", L:"heavy", D:"light"};               // the size each recipe was written for
+const RICE_KG = {light:0.1, medium:0.14, heavy:0.1834};         // raw rice per person per meal
+const LEVELS = [{k:1.25, name:"Comfort", desc:"bigger meat & fish servings"},
+                {k:1.0, name:"Standard", desc:"regular meat & fish servings"},
+                {k:0.75, name:"Tipid", desc:"smaller meat & fish servings, more rice and vegetables"}];
+const ATTEMPTS = [[0,1],[1,1],[1,.75],[2,1],[2,.75],[2,.5],[2,.35]];
+RECIPES.forEach(r => { r.id = r.m + ":" + r.n; });
+const RBY = Object.fromEntries(RECIPES.map(r => [r.id, r]));
+const STYLES = [["all","All Filipino dishes"],["probinsya","Probinsya favorites (Ilocano, Cagayan, Bicol, Visayas…)"],["classic","Filipino classics"],["fiesta","Fiesta & handaan"],["tipid","Tipid / budget dishes"]];
+const SPECIAL_D = {
+  "X:left": {id:"X:left", n:"Leftovers from lunch (no cooking)", m:"D", r:0, i:[], t:[], g:"", special:"left"},
+  "X:none": {id:"X:none", n:"No dinner", m:"D", r:0, i:[], t:[], g:"", special:"none"}};
+Object.assign(RBY, SPECIAL_D);
+if (RBY["B:Pork siomai, fried egg, garlic rice"]) RBY["B:Pork siomai, garlic rice"] = RBY["B:Pork siomai, fried egg, garlic rice"]; // renamed dish
+const DINNER_MODES = [["cook","Cook a dinner dish"],["left","Lunch leftovers (no cooking)"],["none","No dinner"]];
+const dishLabel = d => d.n + (d.g ? ` (${d.g})` : "");
+function mealLvlIdx(dd, m){ const c = menuCfg(); const mlv = (dd.locked && dd.mlvl) ? dd.mlvl : c.mlvl; const v = mlv[m]; return v === "auto" || v == null ? dd.lvl : +v; }
+function stylePool(m){ const st = menuCfg().style; const all = RECIPES.filter(r => r.m === m);
+  if (st === "all") return all; const f = all.filter(r => (r.t || []).includes(st)); return f.length >= 5 ? f : all; }
+
+function menuCfg(){
+  if (!DB.menu) DB.menu = {};
+  const c = DB.menu;
+  if (c.persons == null) c.persons = 6;
+  if (!c.sizes) c.sizes = {B:"heavy", L:"medium", D:"light"};
+  if (c.adj == null) c.adj = 0;
+  if (!c.over) c.over = {};
+  if (!c.plans) c.plans = {};
+  if (!c.seed) c.seed = 1;
+  if (!c.start) c.start = today();
+  if (!c.days) c.days = 7;
+  if (!c.style) c.style = "all";
+  if (!c.mlvl) c.mlvl = {B:"auto", L:"auto", D:"auto"};
+  if (!c.dinner) c.dinner = "cook";
+  if (c.eggPP == null) c.eggPP = 1.5;
+  return c;
+}
+function pinfo(name){
+  const p = findProduct(name); if (p) return {price:p.price, unit:p.unit, cat:p.cat};
+  const s = SEED.find(x => x[0] === name);
+  return s ? {price:+s[3], unit:s[2], cat:s[1], missing:true} : {price:0, unit:"", cat:"Others", missing:true};
+}
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffled(arr, rnd){ const a = arr.slice(); for (let i = a.length-1; i > 0; i--){ const j = Math.floor(rnd()*(i+1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+const mainProt = d => { const x = d.i.find(i => i[2]); return x ? x[0] : "veg:" + d.n; };
+const mainCat = d => { const x = d.i.find(i => i[2]); return x ? pinfo(x[0]).cat : "Vegetables"; };
+function menuPeriod(){
+  const c = menuCfg();
+  const b = c.src && c.src !== "custom" ? DB.budgets.find(x => x.id === c.src) : null;
+  if (b) return {key:b.id, start:b.start, days: diffDays(b.start, b.end) + 1, amount: b.amount, budget:b};
+  const days = Math.max(1, Math.min(62, +c.days || 7));
+  return {key:`custom:${c.start}:${days}`, start: c.start, days, amount: +c.amount || 0, budget:null};
+}
+const target = per => per.amount * (1 + (+menuCfg().adj || 0) / 100);
+function personsOn(date){ const c = menuCfg(); const o = c.over[date]; return Math.max(1, +(o || c.persons) || 1); }
+
+/* lines for one dish served in a meal slot */
+const EGG = "Eggs, medium";
+const isEggDish = d => /egg|itlog|torta|omelet|silog|batil/i.test(d.n);
+function dishLines(d, slot, persons, lvl, sizes, eggPP){
+  const c = menuCfg(), size = (sizes || c.sizes)[slot] || NATIVE[slot];
+  const f = SIZE[size] / SIZE[NATIVE[d.m]], egg = eggPP != null ? +eggPP : +c.eggPP;
+  // egg dishes: a fixed number of eggs per person (default 1.5), not scaled by meal size or portions
+  const lines = d.i.map(([name, q, prot]) => (name === EGG && isEggDish(d))
+    ? {name, pp: egg, prot: !!prot, egg:true}
+    : {name, pp: q * f * (prot ? lvl : 1), prot: !!prot});
+  if (d.r) lines.unshift({name:"Rice, regular milled", pp: RICE_KG[size], rice:true});
+  return lines.map(l => { const pi = pinfo(l.name); const qty = l.pp * persons;
+    return Object.assign(l, {qty, unit:pi.unit, cat:pi.cat, price:pi.price, cost: qty * pi.price, missing: pi.missing}); });
+}
+/* evaluate a draft: costs per day + rounded shopping list */
+function evalPlan(draft){
+  const days = draft.days.map(dd => {
+    const persons = dd.locked ? dd.persons : personsOn(dd.date), sizes = dd.locked && dd.sizes ? dd.sizes : menuCfg().sizes;
+    const meals = ["B","L","D"].map(m => { const d = RBY[dd.meals[m]] || RECIPES.find(r => r.m === m); const li = mealLvlIdx(dd, m);
+      const lines = dishLines(d, m, persons, LEVELS[li].k, sizes, dd.locked && dd.eggPP != null ? dd.eggPP : undefined);
+      return {m, dish:d, lvl:li, lines, cost: sum(lines, l => l.cost)}; });
+    // dinner = lunch leftovers → the dinner rice is cooked together with lunch
+    const Dm = meals[2], Lm = meals[1];
+    if (Dm.dish.special === "left"){
+      const pi = pinfo("Rice, regular milled"), add = RICE_KG[sizes.D || "light"];
+      let rl = Lm.lines.find(l => l.rice);
+      if (!rl){ rl = {name:"Rice, regular milled", pp:0, qty:0, rice:true, unit:pi.unit, cat:pi.cat, price:pi.price, cost:0}; Lm.lines.unshift(rl); }
+      rl.pp += add; rl.qty += add * persons; rl.cost = rl.qty * rl.price; rl.both = true;
+      Lm.cost = sum(Lm.lines, l => l.cost);
+    }
+    return {date:dd.date, persons, lvl:dd.lvl, sizes, locked: !!dd.locked, meals, cost: sum(meals, x => x.cost)};
+  });
+  const personDays = sum(days, d => d.persons);
+  const agg = {};
+  days.forEach(d => d.meals.forEach(ml => ml.lines.forEach(l => { const a = (agg[l.name] = agg[l.name] || {name:l.name, qty:0, locked:0, free:0});
+    a.qty += l.qty; if (d.locked) a.locked += l.qty; else a.free += l.qty; })));
+  PANTRY.forEach(([name, q]) => { const a = (agg[name] = agg[name] || {name, qty:0, locked:0, free:0}); a.qty += q * personDays / 84; a.pantry = true; });
+  // quantities typed in the shopping list: spread the change over the meals of days that are not approved
+  const over = draft.shopOver || {};
+  Object.values(agg).forEach(a => {
+    if (over[a.name] == null) return;
+    const want = Math.max(0, +over[a.name]);
+    a.auto = a.qty;
+    if (!a.pantry){
+      const f = a.free > 0 ? Math.max(0, want - a.locked) / a.free : 1;
+      a.tooLow = want < a.locked - 1e-9;
+      days.forEach(d => { if (d.locked) return; d.meals.forEach(ml => { ml.lines.forEach(l => { if (l.name === a.name){ l.qty *= f; l.pp *= f; l.cost = l.qty * l.price; l.adj = Math.abs(f - 1) > 1e-6; } }); ml.cost = sum(ml.lines, l => l.cost); });
+        d.cost = sum(d.meals, x => x.cost); });
+    }
+    a.set = want;
+  });
+  const shop = Object.values(agg).map(a => { const pi = pinfo(a.name);
+    const auto = pi.unit === "kg" ? Math.ceil((a.auto ?? a.qty) * 20 - 1e-9) / 20 : Math.ceil((a.auto ?? a.qty) - 1e-9);
+    const qty = a.set != null ? a.set : auto;
+    return {name:a.name, need: a.set != null ? a.set : a.qty, qty, auto, edited: a.set != null, tooLow: !!a.tooLow, unit:pi.unit, cat:pi.cat, price:pi.price, cost: qty * pi.price, missing: pi.missing}; });
+  const pantryCost = sum(shop.filter(s => PANTRY.some(p => p[0] === s.name)), s => s.cost);
+  days.forEach(d => { d.pantry = pantryCost * d.persons / Math.max(1, personDays); d.total = d.cost + d.pantry; });
+  return {days, shop, total: sum(shop, s => s.cost), personDays, missing: shop.some(s => s.missing)};
+}
+/* auto-fit: biggest portions & most variety that fit the target */
+function autoFit(per, prev){
+  const c = menuCfg(), tgt = target(per);
+  const keep = {}; (prev && prev.days || []).forEach(d => { if (d.locked) keep[d.date] = d; });
+  const dates = []; for (let i = 0; i < per.days; i++) dates.push(addDays(per.start, i));
+  let best = null;
+  for (const [li, frac] of ATTEMPTS){
+    const rnd = mulberry(c.seed * 7919 + 13), lvl = LEVELS[li].k, order = {};
+    ["B","L","D"].forEach(m => {
+      const mv = c.mlvl[m], mk = mv === "auto" ? lvl : LEVELS[+mv].k;
+      const costPP = d => sum(dishLines(d, m, 1, mk), l => l.cost);
+      const pool = stylePool(m).sort((a,b) => costPP(a) - costPP(b));
+      order[m] = shuffled(pool.slice(0, Math.max(4, Math.ceil(pool.length * frac))), rnd);
+    });
+    // assign dishes: no repeats until the pool is used up, no same meat/fish twice in a day,
+    // and lunch's main protein type changes from one day to the next
+    const used = {B:new Set(), L:new Set(), D:new Set()}; let prevLunchCat = null;
+    Object.values(keep).forEach(k => ["B","L","D"].forEach(m => used[m].add(k.meals[m])));
+    const pick = (m, avoid) => {
+      const pool = order[m]; if (used[m].size >= pool.length) used[m].clear();
+      const free = pool.filter(d => !used[m].has(d.id));
+      const ok = free.find(d => avoid(d)) || free[0];
+      used[m].add(ok.id); return ok;
+    };
+    const draft = {status:"draft", edited:false, frac, shopOver: Object.assign({}, prev && prev.shopOver || {}), days: dates.map(date => {
+      if (keep[date]){ const k = keep[date]; const kl = RBY[k.meals.L]; prevLunchCat = kl ? mainCat(kl) : prevLunchCat; return JSON.parse(JSON.stringify(k)); }
+      const L = pick("L", d => !prevLunchCat || mainCat(d) !== prevLunchCat);
+      const B = pick("B", d => mainProt(d) !== mainProt(L));
+      const D = c.dinner === "cook" ? pick("D", d => mainProt(d) !== mainProt(L) && mainProt(d) !== mainProt(B)) : SPECIAL_D["X:" + c.dinner];
+      prevLunchCat = mainCat(L);
+      return {date, lvl:li, meals:{B:B.id, L:L.id, D:D.id}};
+    })};
+    const ev = evalPlan(draft);
+    if (!best || ev.total < best.ev.total) best = {draft, ev};
+    if (ev.total <= tgt) return draft;
+  }
+  return best.draft;
+}
+function currentDraft(per, force){
+  const c = menuCfg(); let p = c.plans[per.key];
+  const stale = p && p.status === "draft" && (p.days.length !== per.days || p.days[0].date !== per.start);
+  if (!p || stale || (force && p.status === "draft")){ p = autoFit(per, p && p.status === "draft" ? p : null); c.plans[per.key] = p; save(); }
+  return p;
+}
+
+function fmtQty(q, unit){
+  if (unit === "kg") return q < 1 ? `${Math.round(q*1000).toLocaleString()} g` : `${(Math.round(q*1000)/1000).toLocaleString("en-PH",{maximumFractionDigits:3})} kg`;
+  const r = Math.round(q*100)/100; return `${r.toLocaleString("en-PH",{maximumFractionDigits:2})} ${unit}${r === 1 ? "" : (unit.endsWith("s") || unit.includes("(") ? "" : "s")}`;
+}
+const shortName = n => n.replace(" (per kg, from bag rate)", "");
+
+function portionsTable(day){
+  return `<div class="tbl-wrap"><table style="margin-top:6px"><thead><tr><th>Ingredient</th><th class="r">Qty</th><th class="r">Per person</th><th class="r">Cost</th></tr></thead><tbody>${
+    day.meals.map(ml => `<tr><td colspan="4" style="font-weight:700;padding-top:12px">${MEAL_NAME[ml.m]}: ${esc(dishLabel(ml.dish))}</td></tr>` +
+      (ml.dish.special === "left" ? `<tr><td colspan="4" class="muted">Eat the lunch leftovers. Dinner rice is already cooked with lunch — nothing to cook.</td></tr>` : ml.dish.special === "none" ? `<tr><td colspan="4" class="muted">No dinner cooked this day.</td></tr>` : "") + ml.lines.map(l => `<tr><td>${esc(l.rice ? (l.both ? "Rice (raw) — cook enough for lunch and dinner" : "Rice (raw)") : shortName(l.name))}${l.adj ? ` <span class="tag" style="background:var(--warn-bg);color:var(--warn-ink)">adjusted</span>` : ""}</td><td class="r">${fmtQty(l.qty, l.unit)}</td><td class="r">${l.unit === "kg" && (l.prot || l.rice) ? fmtQty(l.pp, "kg") : (l.name.startsWith("Eggs") ? fmtQty(l.pp, "pc") : "")}</td><td class="r">${peso(l.cost)}</td></tr>`).join("")).join("")
+  }<tr><td colspan="3" class="muted">Pantry share (oil, soy sauce, vinegar, salt, seasonings)</td><td class="r">${peso(day.pantry)}</td></tr></tbody></table></div>`;
+}
+function shopTable(shop, totalAmt, editable){
+  const cats = [...new Set(shop.map(s => s.cat))].sort((a,b) => DB.cats.indexOf(a) - DB.cats.indexOf(b));
+  const nEd = shop.filter(s => s.edited).length;
+  return `<div class="card"><div class="row"><h2>Shopping list</h2><span class="spacer"></span>${editable && nEd ? `<button class="btn sm no-print" data-act="sqResetAll">Reset ${nEd} changed qty</button>` : ""}<b class="num">${peso(totalAmt)}</b></div>
+    <p class="hint">${editable ? `Change any <b>Qty</b> to the amount you want to buy. The cost updates, and the portions of every meal that uses it are adjusted on days that are not approved. ` : ""}Freeze meat and fish in meal-size packs; buy leafy greens fresh each week.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="r">${editable ? "Qty to buy" : "Qty"}</th><th class="r hide-sm">Price</th><th class="r">Cost</th></tr></thead><tbody>${
+    cats.map(cat => { const rows = shop.filter(s => s.cat === cat).sort((a,b) => a.name.localeCompare(b.name));
+      return `<tr><td colspan="4" style="font-weight:700;color:var(--ink-2);padding-top:14px;font-size:12px;text-transform:uppercase;letter-spacing:.5px">${esc(cat)} · ${peso(sum(rows, r => r.cost))}</td></tr>` +
+        rows.map(s => `<tr${s.edited ? ` style="background:var(--warn-bg)"` : ""}><td>${esc(shortName(s.name))}${s.edited ? `<div class="small" style="color:var(--warn-ink);font-weight:600">Changed · auto was ${fmtQty(s.auto, s.unit)}${s.tooLow ? " · less than approved days need" : ""}</div>` : ""}</td>
+          <td class="r">${editable ? `<span style="white-space:nowrap"><input type="number" min="0" step="any" inputmode="decimal" data-sq="${esc(s.name)}" value="${Math.round(s.qty*1000)/1000}" style="width:86px;min-height:34px;padding:4px 8px;text-align:right"> <span class="small muted">${esc(s.unit)}</span>${s.edited ? ` <button class="icon-btn no-print" data-sqreset="${esc(s.name)}" title="Back to auto qty" aria-label="Back to auto qty" style="display:inline-block;vertical-align:middle">${ICON.repeat}</button>` : ""}</span>` : fmtQty(s.qty, s.unit)}</td>
+          <td class="r hide-sm">${peso(s.price)}/${esc(s.unit)}</td><td class="r">${peso(s.cost)}</td></tr>`).join(""); }).join("")
+    }</tbody></table></div></div>`;
+}
+
+function dishSelect(dd, slot, persons, lvl, sizes){
+  const spec = slot === "D" ? `<optgroup label="Dinner option">${Object.values(SPECIAL_D).map(r => `<option value="${r.id}" ${r.id === dd.meals.D ? "selected" : ""}>${esc(r.n)} — ${peso0(sum(dishLines(r, "D", persons, lvl, sizes), l => l.cost))}</option>`).join("")}</optgroup>` : "";
+  const groups = [["B","Breakfast dishes"],["L","Main / lunch dishes"],["D","Light / dinner dishes"]];
+  return `<select data-mdish="${dd.date}|${slot}" style="min-height:36px;padding:6px 8px">${spec}${groups.map(([m, label]) =>
+    `<optgroup label="${label}">${RECIPES.filter(r => r.m === m).map(r => { const cst = sum(dishLines(r, slot, persons, lvl, sizes), l => l.cost);
+      return `<option value="${esc(r.id)}" ${r.id === dd.meals[slot] ? "selected" : ""}>${esc(dishLabel(r))} — ${peso0(cst)}</option>`; }).join("")}</optgroup>`).join("")}</select>`;
+}
+
+function viewMenu(){
+  const c = menuCfg();
+  if (c.src && c.src !== "custom" && !DB.budgets.find(x => x.id === c.src)) c.src = "";
+  if (!c.src) c.src = DB.budgets.length ? (currentBudget() || DB.budgets[0]).id : "custom";
+  const isCustom = c.src === "custom", per = menuPeriod();
+  const existing = c.plans[per.key];
+  const approved = existing && existing.status === "approved";
+  const srcOpts = budgetsSorted().map(b => { const p = c.plans[b.id]; return `<option value="${b.id}" ${c.src===b.id?"selected":""}>${esc(budgetName(b))} · ${peso0(b.amount)}${p && p.status==="approved" ? " · APPROVED" : ""}</option>`; }).join("") + `<option value="custom" ${isCustom?"selected":""}>Custom amount and dates</option>`;
+  let h = `<div class="card no-print"><h2>Menu plan</h2><p class="hint">Pick a budget. Edit the draft freely, then tap <b>Approve plan &amp; buy</b> when you shop.</p>
+    <div class="filters" style="margin-bottom:0">
+      <label style="flex:3 1 260px">Budget<select data-m="src">${srcOpts}</select></label>
+      ${isCustom ? `<label>Amount (₱)<input type="number" min="1" step="any" inputmode="decimal" data-m="amount" value="${esc(c.amount)}" placeholder="e.g. 5000"></label>
+      <label>Start date<input type="date" data-m="start" value="${esc(c.start)}"></label>
+      <label>Number of days<input type="number" min="1" max="62" data-m="days" value="${esc(c.days)}"></label>` : ""}
+    </div></div>`;
+  if (!per.amount){ app.innerHTML = h + `<div class="card"><div class="empty">Enter a budget amount, or set a budget in the Budgets tab, to make a menu.</div></div>`; return; }
+
+  if (approved){ app.innerHTML = h + approvedView(existing, per); fillProductList(); return; }
+
+  const draft = currentDraft(per);
+  const ev = evalPlan(draft), tgt = target(per), adj = +c.adj || 0;
+  const diffT = tgt - ev.total, diffB = per.amount - ev.total, dailyT = tgt / per.days;
+  const st = ev.total <= tgt ? "good" : ev.total <= per.amount ? "warn" : "crit";
+  const adjOpts = [-15,-10,-5,0,5,10,15].map(v => `<option value="${v}" ${v===adj?"selected":""}>${v===0?"Exactly the budget":(v<0?`${-v}% lower`:`${v}% higher`)} (${peso0(per.amount*(1+v/100))})</option>`).join("");
+  const sizeSel = m => `<label>${MEAL_NAME[m]} size<select data-msize="${m}">${["light","medium","heavy"].map(s => `<option value="${s}" ${c.sizes[m]===s?"selected":""}>${SIZE_LABEL[s]}</option>`).join("")}</select></label>`;
+  const nLocked = draft.days.filter(d => d.locked).length;
+  h += `<div class="card"><div class="row" style="margin-bottom:10px"><span class="badge warn">${ICON.edit}Draft · not yet bought</span>${nLocked ? `<span class="badge good">${ICON.good}${nLocked} of ${draft.days.length} days approved</span>` : ""}<span class="spacer"></span><button class="btn primary no-print" data-act="menuApprove">Approve plan &amp; buy</button></div>
+    <div class="alert ${st}">${ICON[st]}<div>${st === "good" ? `<b>Fits the plan target.</b> Menu cost ${peso(ev.total)}, target ${peso(tgt)} (${peso(diffT)} left).`
+      : st === "warn" ? `<b>Above your plan target by ${peso(-diffT)}</b>, but still within the budget of ${peso(per.amount)}. Swap a dish for a cheaper one or tap Auto-fit.`
+      : `<b>Over the budget by ${peso(-diffB)}.</b> Swap dishes for cheaper ones, lower the portions, or tap Auto-fit.`}</div></div>
+    ${ev.missing ? `<div class="alert warn">${ICON.warn}<div>Some ingredients are not in your product list, so the original 3F prices were used.</div></div>` : ""}
+    <div class="small" style="display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--ink-2);margin-top:8px">
+      <span>Budget <b class="num" style="color:var(--ink)">${peso(per.amount)}</b></span>${adj ? `<span>Target <b class="num" style="color:var(--ink)">${peso(tgt)}</b></span>` : ""}
+      <span>Menu <b class="num" style="color:${st==="crit"?"var(--crit-ink)":"var(--ink)"}">${peso(ev.total)}</b></span>
+      <span><b class="num" style="color:var(--ink)">${peso(ev.total/Math.max(1,ev.personDays))}</b> per person/day</span>
+      <span>${fmtRange(per.start, addDays(per.start, per.days-1))}</span></div>
+  </div>
+`;
+  const seg = segBar([["days","Daily menu"],["shop","Shopping list"],["settings","Settings"]]);
+  h += seg.html;
+  if (seg.cur === "settings"){
+    h += `<div class="card no-print"><h2>Menu settings</h2><p class="hint">Changes rebuild the days that are not approved.</p>
+    <div class="filters" style="margin:12px 0 0">
+      <label>People eating daily<input type="number" min="1" max="50" inputmode="numeric" data-m="persons" value="${esc(c.persons)}"></label>
+      ${sizeSel("B")}${sizeSel("L")}${sizeSel("D")}
+      <label style="flex:2 1 220px">Plan target<select data-m="adj">${adjOpts}</select></label>
+      ${["B","L","D"].map(m => `<label>${MEAL_NAME[m]} portions<select data-mml="${m}"><option value="auto" ${c.mlvl[m]==="auto"?"selected":""}>Auto (fit budget)</option>${LEVELS.map((L, li) => `<option value="${li}" ${String(c.mlvl[m])===String(li)?"selected":""}>${L.name}</option>`).join("")}</select></label>`).join("")}
+      <label>Eggs per person (egg dishes)<input type="number" min="0.5" max="4" step="0.5" inputmode="decimal" data-m="eggPP" value="${esc(c.eggPP)}"></label>
+      <label style="flex:2 1 220px">Dinner<select data-m="dinner">${DINNER_MODES.map(([v, l]) => `<option value="${v}" ${c.dinner===v?"selected":""}>${l}</option>`).join("")}</select></label>
+      <label style="flex:3 1 260px">Menu style<select data-m="style">${STYLES.map(([v, l]) => `<option value="${v}" ${c.style===v?"selected":""}>${l}</option>`).join("")}</select></label>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" data-act="menuFit">Auto-fit menu to target</button><button class="btn" data-act="menuShuffle">Make another menu</button><button class="btn" data-act="lockAll">Approve all days</button>${nLocked ? `<button class="btn" data-act="unlockAll">Unlock all days</button>` : ""}</div>
+    ${c.dinner === "left" && String(c.mlvl.L) !== "0" ? `<p class="small" style="margin:8px 0 0;color:var(--warn-ink);font-weight:600">Tip: set Lunch portions to Comfort so there are enough leftovers for dinner.</p>` : ""}
+    ${(() => { const n = draft.days.filter(d => d.locked).length; return n ? `<div class="alert good" style="margin:10px 0 0">${ICON.good}<div><b>${n} of ${draft.days.length} days approved.</b> Approved days stay the same when you tap Make another menu, Auto-fit, or change the settings. Only the other days change.</div></div>` : ""; })()}
+    ${draft.edited ? `<p class="small muted" style="margin:8px 0 0">You changed some days by hand. Auto-fit will replace changes on days that are not approved — approve a day to keep it.</p>` : ""}
+  </div>`;
+  } else if (seg.cur === "shop"){
+    h += shopTable(ev.shop, ev.total, true);
+  } else {
+    h += `<div class="row no-print" style="margin:-4px 0 10px"><button class="btn sm" data-act="menuShuffle">Make another menu</button><button class="btn sm" data-act="menuFit">Auto-fit to target</button><span class="spacer"></span><span class="small muted">Daily target ${peso(dailyT)}</span></div>`;
+    h += daysView(ev.days, {label:"Draft", sizes:c.sizes, okFn: i => !!draft.days[i].locked,
+      dayHead: (d, i) => { const dd = draft.days[i], dv = dailyT - d.total, lk = !!dd.locked;
+        return `<div class="row"><h2 style="margin:0">Day ${i+1} · ${fmtLong(d.date)}</h2>${fromTag(dd, draft.days)}${lk ? `<span class="badge good" style="font-size:12px;padding:3px 8px">${ICON.good}Day approved</span>` : ""}<span class="spacer"></span><b class="num" style="font-size:18px">${peso(d.total)}</b></div>
+        <div class="small" style="color:${dv<0?"var(--crit-ink)":"var(--good-ink)"};font-weight:600;margin-top:2px">${dv<0?peso(-dv)+" over":peso(dv)+" under"} the daily target</div>
+        <div class="row no-print" style="margin-top:10px">${lk
+          ? `<span class="small muted" style="font-weight:600">${d.persons} ${d.persons===1?"person":"people"} · ${LEVELS[dd.lvl].name} portions</span>`
+          : `<label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">People <input type="number" min="1" max="50" inputmode="numeric" data-mday="${d.date}" value="${d.persons}" style="width:70px;min-height:36px;padding:4px 8px"></label>
+          <label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">Portions <select data-mlvl="${d.date}" style="width:auto;min-height:36px;padding:4px 8px">${LEVELS.map((L, li) => `<option value="${li}" ${li===dd.lvl?"selected":""}>${L.name}</option>`).join("")}</select></label>`}
+          <span class="spacer"></span>${shiftSelect(draft.days, i)}${lk ? `<button class="btn sm" data-unlockday="${d.date}">Unlock day</button>` : `<button class="btn sm" data-lockday="${d.date}" style="border-color:var(--good);color:var(--good-ink)">${ICON.good.replace('<svg','<svg style="width:16px;height:16px;vertical-align:-3px"')} Approve day</button>`}</div>`; },
+      dishCtl: (d, i, ml) => { const dd = draft.days[i];
+        return dd.locked ? `<div class="meal-dish">${esc(dishLabel(ml.dish))}</div>` : `<div class="no-print">${dishSelect(dd, ml.m, d.persons, LEVELS[ml.lvl].k, d.sizes)}</div><div class="meal-dish" style="display:none">${esc(dishLabel(ml.dish))}</div>`; }});
+  }
+  app.innerHTML = h;
+  viewMenu.last = {per, draft, ev};
+}
+
+/* ---------- Actual purchase vs plan ---------- */
+const isPantry = n => PANTRY.some(p => p[0] === n);
+function actualRows(p){
+  p.actual = p.actual || {};
+  return p.snap.shop.map((it, i) => {
+    const a = p.actual[it.name] || {qty: it.qty, price: it.price};
+    const aq = Math.max(0, +a.qty || 0), ap = Math.max(0, +a.price || 0), need = it.need != null ? it.need : it.qty;
+    const acost = aq * ap, v = acost - it.cost;
+    let st = "same";
+    if (aq === 0) st = "none"; else if (aq < need - 1e-6) st = "short"; else if (aq > it.qty + 1e-6) st = "extra";
+    const pd = ap - it.price;
+    return Object.assign({}, it, {i, aq, ap, need, acost, v, st, pd});
+  });
+}
+function actualCalc(p){
+  const rows = actualRows(p), extras = p.extras || [];
+  const factor = {}, price = {};
+  rows.forEach(r => { factor[r.name] = r.need > 0 ? Math.min(1, r.aq / r.need) : 1; price[r.name] = r.ap; });
+  const plannedPantry = sum(rows.filter(r => isPantry(r.name)), r => r.cost), actualPantry = sum(rows.filter(r => isPantry(r.name)), r => r.acost);
+  const pr = plannedPantry ? actualPantry / plannedPantry : 1;
+  const days = p.snap.days.map(d => {
+    const meals = d.meals.map(ml => { const lines = ml.lines.map(l => { const f = factor[l.name] ?? 1, ap = price[l.name] ?? l.price;
+        return Object.assign({}, l, {qty: l.qty * f, pp: l.pp * f, cost: l.qty * f * ap, short: f < 0.999}); });
+      return Object.assign({}, ml, {lines, cost: sum(lines, l => l.cost)}); });
+    const pantry = d.pantry * pr, cost = sum(meals, m => m.cost);
+    return Object.assign({}, d, {meals, pantry, total: cost + pantry, short: meals.some(m => m.lines.some(l => l.short))});
+  });
+  const total = sum(rows, r => r.acost) + sum(extras, x => x.qty * x.price);
+  return {rows, extras, days, total, shortRows: rows.filter(r => r.st === "short" || r.st === "none")};
+}
+const ST_BADGE = {same:["good","As planned"], short:["warn","Short"], none:["crit","Not bought"], extra:["good","Extra"]};
+
+function approvedView(p, per){
+  const s = p.snap, A = actualCalc(p), bought = !!p.purchased;
+  const shown = bought ? A.total : s.total, diffPlan = A.total - s.total, left = s.amount - shown;
+  const actualPeriod = sum(expensesIn(s.start, s.end), total);
+  const cats = [...new Set(A.rows.map(r => r.cat))].sort((a,b) => DB.cats.indexOf(a) - DB.cats.indexOf(b));
+  const inp = (attr, i, v) => `<input type="number" min="0" step="any" inputmode="decimal" data-${attr}="${i}" value="${Math.round(v*1000)/1000}" style="width:92px;min-height:34px;padding:4px 8px;text-align:right">`;
+  let h = `<div class="card">
+    <div class="row"><h2>Approved menu plan</h2><span class="badge good" style="margin-left:6px">${ICON.good}Approved · locked</span>${bought ? `<span class="badge good">${ICON.good}Actual purchase saved</span>` : `<span class="badge warn">${ICON.warn}Actual purchase not entered</span>`}</div>
+    <p class="hint" style="margin-top:6px">Approved on ${fmtLong(p.approvedOn)}. The menu is final. ${bought ? `Costs and portions below follow what you actually bought (saved ${fmtLong(p.purchased)}).` : `After buying, enter the actual quantities and prices in <b>Actual purchase</b> below.`}</p>
+    ${bought ? (left < 0 ? `<div class="alert crit">${ICON.crit}<div><b>Actual purchase is over the budget by ${peso(-left)}.</b></div></div>` : "") +
+      (A.shortRows.length ? `<div class="alert warn">${ICON.warn}<div><b>${A.shortRows.length} item${A.shortRows.length===1?" was":"s were"} bought short or not at all.</b> Portions on the affected days are reduced to match what you bought (marked “short”).</div></div>` : `<div class="alert good">${ICON.good}<div><b>Everything on the list was bought.</b></div></div>`)
+      : `<div class="alert warn">${ICON.warn}<div><b>Next step:</b> enter what you actually bought — change the quantity or price only where it differs — then tap <b>Save actual purchase</b>.</div></div>`}
+    <div class="tiles" style="margin:12px 0 0">
+      <div class="tile"><div class="k">Budget</div><div class="v num">${peso(s.amount)}</div><div class="s">${fmtRange(s.start, s.end)}</div></div>
+      <div class="tile"><div class="k">Planned cost</div><div class="v num">${peso(s.total)}</div><div class="s">Approved shopping list</div></div>
+      <div class="tile"><div class="k">Actual purchase</div><div class="v num">${peso(A.total)}</div><div class="s" style="color:${diffPlan>0.004?"var(--crit-ink)":diffPlan<-0.004?"var(--good-ink)":"inherit"}">${Math.abs(diffPlan) < 0.005 ? "Same as plan" : `${peso(Math.abs(diffPlan))} ${diffPlan > 0 ? "more" : "less"} than plan`}${bought ? "" : " · not saved yet"}</div></div>
+      <div class="tile"><div class="k">${left >= 0 ? "Budget left" : "Over budget by"}</div><div class="v num" style="color:${left<0?"var(--crit-ink)":"var(--good-ink)"}">${peso(Math.abs(left))}</div><div class="s">${bought ? "After actual purchase" : "Based on plan"} · all spending in period ${peso(actualPeriod)}</div></div>
+    </div>
+    <div class="row no-print" style="margin-top:12px"><button class="btn" data-act="print">Print menu</button><span class="spacer"></span><button class="btn sm danger" data-act="menuUnapprove">Cancel approval</button></div>
+  </div>`;
+  const actualCard = `<div class="card"><div class="row"><h2>Actual purchase vs plan</h2><span class="spacer"></span><b class="num">${peso(A.total)}</b></div>
+    <p class="hint">Planned amounts are filled in. Change <b>Actual qty</b> and <b>Actual price</b> to what you really bought. Put 0 if not bought.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="r">Planned</th><th class="r">Actual qty</th><th class="r">Actual price</th><th class="r">Actual cost</th><th class="r">vs plan</th><th>Status</th></tr></thead><tbody>${
+    cats.map(cat => { const rows = A.rows.filter(r => r.cat === cat);
+      return `<tr><td colspan="7" style="font-weight:700;color:var(--ink-2);padding-top:14px;font-size:12px;text-transform:uppercase;letter-spacing:.5px">${esc(cat)}</td></tr>` + rows.map(r => {
+        const [bc, bl] = ST_BADGE[r.st]; const ptxt = Math.abs(r.pd) > 0.004 ? `<div class="small" style="color:${r.pd>0?"var(--crit-ink)":"var(--good-ink)"}">price ${r.pd>0?"up":"down"} ${peso(Math.abs(r.pd))}</div>` : "";
+        return `<tr><td>${esc(shortName(r.name))}<div class="small muted">${esc(r.unit)}</div></td><td class="r">${fmtQty(r.qty, r.unit)}<div class="small muted">${peso(r.price)} · ${peso(r.cost)}</div></td>
+          <td class="r">${inp("aq", r.i, r.aq)}</td><td class="r">${inp("ap", r.i, r.ap)}</td><td class="r">${peso(r.acost)}</td>
+          <td class="r" style="color:${r.v>0.004?"var(--crit-ink)":r.v<-0.004?"var(--good-ink)":"inherit"}">${Math.abs(r.v) < 0.005 ? "—" : (r.v > 0 ? "+" : "−") + peso(Math.abs(r.v))}</td>
+          <td><span class="badge ${bc}" style="font-size:12px;padding:3px 8px">${bl}</span>${ptxt}</td></tr>`; }).join(""); }).join("")
+    }${A.extras.length ? `<tr><td colspan="7" style="font-weight:700;color:var(--ink-2);padding-top:14px;font-size:12px;text-transform:uppercase;letter-spacing:.5px">Not on the list (extra purchases)</td></tr>` + A.extras.map((x, j) =>
+      `<tr><td>${esc(x.name)}<div class="small muted">${esc(x.cat)}</div></td><td class="r muted">—</td><td class="r">${fmtQty(x.qty, x.unit)}</td><td class="r">${peso(x.price)}</td><td class="r">${peso(x.qty*x.price)}</td><td class="r" style="color:var(--crit-ink)">+${peso(x.qty*x.price)}</td><td><button class="btn sm" data-xdel="${j}">Remove</button></td></tr>`).join("") : ""}
+    </tbody></table></div>
+    <div class="filters no-print" style="margin:14px 0 0;align-items:flex-end">
+      <label style="flex:3 1 200px">Add item not on the list<input id="xName" list="dlProducts" placeholder="e.g. Corned beef 150 g"></label>
+      <label style="flex:1 1 90px">Qty<input id="xQty" type="number" min="0" step="any" inputmode="decimal" value="1"></label>
+      <label style="flex:1 1 110px">Price per unit<input id="xPrice" type="number" min="0" step="any" inputmode="decimal"></label>
+      <button class="btn" data-act="xAdd">Add</button>
+    </div>
+    <label class="check no-print" style="margin-top:14px"><input type="checkbox" id="updPrices" checked> Also update my product list to the actual prices paid</label>
+    <div class="row no-print" style="margin-top:12px"><span class="small muted">Saving replaces this plan's expenses with the actual amounts, so the dashboard and budget follow what you really spent.</span><span class="spacer"></span><button class="btn primary" data-act="saveActual">${bought ? "Update actual purchase" : "Save actual purchase"}</button></div>
+  </div>`;
+  const seg = segBar([["days","Daily menu"],["actual", bought ? "Actual purchase" : "Enter actual purchase"]]);
+  h += seg.html;
+  if (seg.cur === "actual") return h + actualCard;
+  const dayList = bought ? A.days : p.snap.days;
+  h += daysView(dayList, {label:"Approved plan", sizes:s.sizes, okFn: null,
+    dayHead: (d, i) => `<div class="row"><h2 style="margin:0">Day ${i+1} · ${fmtLong(d.date)}</h2>${fromTag(p.snap.days[i], p.snap.days)}${d.short && bought ? `<span class="badge warn" style="font-size:12px;padding:3px 8px">${ICON.warn}Some items short</span>` : ""}<span class="spacer"></span><b class="num" style="font-size:18px">${peso(d.total)}</b></div>
+      <div class="row" style="margin-top:8px"><span class="small muted" style="font-weight:600">${d.persons} ${d.persons===1?"person":"people"} · ${bought ? "follows actual purchase" : "approved plan"}</span><span class="spacer"></span>${shiftSelect(p.snap.days, i)}</div>`,
+    dishCtl: (d, i, ml) => `<div class="meal-dish">${esc(dishLabel(ml.dish))}</div>`});
+  return h;
+}
+
+function approveMenu(){
+  const L = viewMenu.last; if (!L) return;
+  const {per, draft, ev} = L, c = menuCfg();
+  if (ev.total > per.amount && !confirm(`This menu is ${peso(ev.total - per.amount)} over the budget. Approve anyway?`)) return;
+  if (!confirm(`Approve this menu plan (${peso(ev.total)}) and lock it?\n\nAfter approval you cannot change dishes, portions or people. After buying, enter what you actually bought so the app can compare it with the plan.`)) return;
+  const snap = JSON.parse(JSON.stringify({start:per.start, end:addDays(per.start, per.days-1), amount:per.amount, persons:c.persons, sizes:c.sizes, total:ev.total, shop:ev.shop,
+    days: ev.days.map(d => ({date:d.date, persons:d.persons, lvl:d.lvl, sizes:d.sizes, total:d.total, pantry:d.pantry, meals:d.meals.map(ml => ({m:ml.m, lvl:ml.lvl, dish:{n:ml.dish.n, g:ml.dish.g || "", special:ml.dish.special || ""}, cost:ml.cost, lines:ml.lines}))}))}));
+  c.plans[per.key] = {status:"approved", approvedOn: today(), snap, draft, actual:{}, extras:[], purchased:null};
+  save(); toast("Menu plan approved and locked"); render();
+}
+function saveActual(p, key){
+  const A = actualCalc(p);
+  if (!confirm(`Save actual purchase of ${peso(A.total)} (plan was ${peso(p.snap.total)})?\n\nThis replaces this plan's recorded expenses with the actual amounts.`)) return;
+  const t = today(), d = t < p.snap.start ? p.snap.start : (t > p.snap.end ? p.snap.end : t);
+  DB.expenses = DB.expenses.filter(e => e.planKey !== key);
+  const note = `Menu plan actual purchase (bought ${fmtShort(t)})`;
+  A.rows.filter(r => r.aq > 0).forEach(r => DB.expenses.push({id:uid(), date:d, name:r.name, cat:r.cat, unit:r.unit, qty:r.aq, price:r.ap, note, planKey:key}));
+  A.extras.forEach(x => DB.expenses.push({id:uid(), date:d, name:x.name, cat:x.cat, unit:x.unit, qty:x.qty, price:x.price, note: note + " · extra", planKey:key}));
+  const upd = $("#updPrices"); let n = 0;
+  if (upd && upd.checked) A.rows.forEach(r => { if (r.aq > 0 && Math.abs(r.pd) > 0.004){ const pr = findProduct(r.name); if (pr){ pr.price = r.ap; n++; } } });
+  p.purchased = t;
+  save(); toast(`Actual purchase saved${n ? ` · ${n} price${n===1?"":"s"} updated` : ""}`); render();
+}
+// focus-friendly re-render for the actual-purchase inputs
+function rerenderKeepFocus(){
+  setTimeout(() => { const ae = document.activeElement; const key = ae && ae.dataset && (ae.dataset.aq != null ? ["aq", ae.dataset.aq] : ae.dataset.ap != null ? ["ap", ae.dataset.ap] : null);
+    render(); if (key){ const el = app.querySelector(`[data-${key[0]}="${key[1]}"]`); if (el){ el.focus({preventScroll:true}); try{ el.select(); }catch(_){} } } }, 0);
+}
+app.addEventListener("change", e => {
+  const ds = e.target.dataset; if (ds.aq == null && ds.ap == null) return;
+  const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "approved") return;
+  const i = +(ds.aq ?? ds.ap), it = p.snap.shop[i]; if (!it) return;
+  const cur = p.actual[it.name] || {qty: it.qty, price: it.price};
+  if (ds.aq != null) cur.qty = Math.max(0, +e.target.value || 0); else cur.price = Math.max(0, +e.target.value || 0);
+  p.actual[it.name] = cur; save(); rerenderKeepFocus();
+});
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-act],[data-xdel]"); if (!t) return;
+  const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "approved") return;
+  if (t.dataset.xdel != null){ p.extras.splice(+t.dataset.xdel, 1); save(); render(); return; }
+  if (t.dataset.act === "xAdd"){
+    const name = $("#xName").value.trim(), qty = +$("#xQty").value, priceIn = $("#xPrice").value;
+    if (!name || !(qty > 0)){ toast("Enter the item and quantity"); return; }
+    const pr = findProduct(name); const price = priceIn !== "" ? +priceIn : (pr ? pr.price : NaN);
+    if (!(price >= 0)){ toast("Enter the price per unit"); return; }
+    p.extras = p.extras || []; p.extras.push({name: pr ? pr.name : name, qty, price, unit: pr ? pr.unit : "pc", cat: pr ? pr.cat : "Others"});
+    save(); render(); return;
+  }
+  if (t.dataset.act === "saveActual") saveActual(p, per.key);
+});
+
+app.addEventListener("change", e => {
+  const t = e.target, c = menuCfg(); const ds = t.dataset;
+  if (!(ds.m || ds.mday || ds.msize || ds.mdish || ds.mlvl || ds.mml)) return;
+  const per = menuPeriod(), p = c.plans[per.key];
+  const autoRefit = () => { if (p && p.status === "draft" && !p.edited) c.plans[per.key] = autoFit(menuPeriod(), p); };
+  if (ds.m){
+    if (ds.m === "persons" || ds.m === "days") c[ds.m] = Math.max(1, Math.round(+t.value || 1));
+    else if (ds.m === "eggPP"){ c.eggPP = Math.max(0.5, Math.min(4, Math.round((+t.value || 1.5) * 2) / 2)); autoRefit(); }
+    else if (ds.m === "adj") c.adj = +t.value;
+    else c[ds.m] = t.value;
+    if (ds.m === "persons" || ds.m === "adj" || ds.m === "style") autoRefit();
+    if (ds.m === "dinner" && p && p.status === "draft"){
+      if (!p.edited) autoRefit();
+      else if (c.dinner === "cook"){ const fresh = autoFit(menuPeriod(), p); p.days.forEach((dd, i) => { if (!dd.locked && SPECIAL_D[dd.meals.D]) dd.meals.D = fresh.days[i].meals.D; }); }
+      else p.days.forEach(dd => { if (!dd.locked) dd.meals.D = "X:" + c.dinner; });
+    }
+  } else if (ds.mml){ c.mlvl[ds.mml] = t.value; autoRefit(); } else if (ds.msize){ c.sizes[ds.msize] = t.value; autoRefit(); }
+  else if (ds.mday){ const n = Math.max(1, Math.min(50, Math.round(+t.value || 0))); if (n === +c.persons) delete c.over[ds.mday]; else c.over[ds.mday] = n; }
+  else if (ds.mdish && p){ const [date, slot] = ds.mdish.split("|"); const dd = p.days.find(x => x.date === date); if (dd && !dd.locked){ dd.meals[slot] = t.value; p.edited = true; } }
+  else if (ds.mlvl && p){ const dd = p.days.find(x => x.date === ds.mlvl); if (dd && !dd.locked){ dd.lvl = +t.value; p.edited = true; } }
+  save(); render();
+});
+function shiftSelect(days, i){
+  const opt = (kind, j) => `<option value="${kind}|${j}">${kind === "swap" ? "Swap with" : "Move to"} Day ${j+1} · ${fmtShort(days[j].date)}</option>`;
+  const others = days.map((_, j) => j).filter(j => j !== i);
+  return `<select class="no-print" data-mshift="${i}" style="width:auto;min-height:32px;padding:4px 8px;font-size:13px" aria-label="Move this day's menu">
+    <option value="">Move menu…</option><optgroup label="Swap menus (both days trade)">${others.map(j => opt("swap", j)).join("")}</optgroup>
+    <optgroup label="Move here (days in between shift)">${others.map(j => opt("move", j)).join("")}</optgroup></select>`;
+}
+const fromTag = (d, days) => { if (!d.from || d.from === d.date) return ""; const j = days.findIndex(x => x.date === d.from);
+  return `<span class="tag" style="margin-left:6px">Moved from ${j >= 0 ? "Day " + (j+1) + " · " : ""}${fmtShort(d.from)}</span>`; };
+/* swap or move the menus of two days; dates stay in place */
+function shiftDays(days, i, kind, j){
+  const content = days.map(d => { const c = Object.assign({}, d); const date = c.date; delete c.date; if (!c.from) c.from = date; return c; });
+  if (kind === "swap"){ const t = content[i]; content[i] = content[j]; content[j] = t; }
+  else { const [m] = content.splice(i, 1); content.splice(j, 0, m); }
+  days.forEach((d, k) => { const date = d.date; Object.keys(d).forEach(key => delete d[key]); Object.assign(d, content[k], {date}); if (d.from === date) delete d.from; });
+}
+function lockDay(dd, on){
+  if (on){ dd.locked = true; dd.persons = personsOn(dd.date); dd.sizes = Object.assign({}, menuCfg().sizes); dd.mlvl = Object.assign({}, menuCfg().mlvl); dd.eggPP = menuCfg().eggPP; }
+  else { dd.locked = false; delete dd.persons; delete dd.sizes; delete dd.mlvl; delete dd.eggPP; }
+}
+app.addEventListener("change", e => {
+  const name = e.target.dataset.sq; if (name == null) return;
+  const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "draft") return;
+  p.shopOver = p.shopOver || {};
+  if (e.target.value === "") delete p.shopOver[name]; else p.shopOver[name] = Math.max(0, +e.target.value || 0);
+  save();
+  setTimeout(() => { const ae = document.activeElement, next = ae && ae.dataset ? ae.dataset.sq : null; const y = window.scrollY; render(); window.scrollTo(0, y);
+    if (next != null){ const el = [...app.querySelectorAll("[data-sq]")].find(x => x.dataset.sq === next); if (el){ el.focus({preventScroll:true}); try{ el.select(); }catch(_){} } } }, 0);
+});
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-sqreset],[data-act=sqResetAll]"); if (!t) return;
+  const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "draft") return;
+  if (t.dataset.sqreset != null) delete (p.shopOver || {})[t.dataset.sqreset]; else p.shopOver = {};
+  const y = window.scrollY; save(); render(); window.scrollTo(0, y); toast("Back to auto quantity");
+});
+app.addEventListener("change", e => {
+  const sel = e.target.closest("[data-mshift]"); if (!sel || !sel.value) return;
+  const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p) return;
+  const days = p.status === "approved" ? p.snap.days : p.days;
+  const i = +sel.dataset.mshift, [kind, j] = [sel.value.split("|")[0], +sel.value.split("|")[1]];
+  shiftDays(days, i, kind, j); if (p.status === "draft") p.edited = true;
+  save(); render(); toast(kind === "swap" ? `Day ${i+1} and Day ${j+1} menus swapped` : `Day ${i+1} menu moved to Day ${j+1}`);
+});
+app.addEventListener("click", e => {
+  const ld = e.target.closest("[data-lockday],[data-unlockday]"); if (ld){
+    const c = menuCfg(), per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "draft") return;
+    const date = ld.dataset.lockday || ld.dataset.unlockday, dd = p.days.find(x => x.date === date); if (!dd) return;
+    lockDay(dd, !!ld.dataset.lockday); save(); render(); toast(ld.dataset.lockday ? "Day approved — it won't change" : "Day unlocked"); return; }
+  const t = e.target.closest("[data-act]"); if (!t) return; const a = t.dataset.act; const c = menuCfg();
+  if (a === "menuShuffle" || a === "menuFit"){
+    const per = menuPeriod(), p = c.plans[per.key];
+    const nk = p && p.days ? p.days.filter(d => d.locked).length : 0;
+    if (p && p.edited && !confirm("Replace your hand changes on days that are NOT approved?\n\nApproved days will stay as they are.")) return;
+    if (a === "menuShuffle") c.seed++;
+    c.plans[per.key] = autoFit(per, p); save(); render();
+    toast((a === "menuFit" ? "Menu fitted to target" : "New menu made") + (nk ? ` · ${nk} approved day${nk===1?"":"s"} kept` : ""));
+  }
+  if (a === "menuApprove") approveMenu();
+  if (a === "lockAll" || a === "unlockAll"){ const per = menuPeriod(), p = c.plans[per.key]; if (!p || p.status !== "draft") return;
+    p.days.forEach(dd => lockDay(dd, a === "lockAll")); save(); render(); toast(a === "lockAll" ? "All days approved" : "All days unlocked"); }
+  if (a === "menuUnapprove"){ const per = menuPeriod(), p = c.plans[per.key]; if (!p) return;
+    if (!confirm(p.purchased ? "An actual purchase is already saved for this plan.\n\nCancel the approval anyway and return the menu to draft? The recorded expenses are kept." : "Cancel the approval and return this menu to draft?\n\nOnly do this if the raw products were NOT bought yet.")) return;
+    c.plans[per.key] = Object.assign(p.draft, {status:"draft", edited:true}); save(); toast("Back to draft"); render(); }
+});
+/* ============ Friendlier menu UI: segments, one day at a time, chef card ============ */
+let MDAY = null, CHEF_SRC = null;
+function segBar(opts){ const cur = opts.some(o => o[0] === DB.ui.mseg) ? DB.ui.mseg : opts[0][0];
+  return {cur, html:`<div class="seg no-print">${opts.map(([v, l]) => `<button type="button" data-mseg="${v}" aria-pressed="${cur===v}">${l}</button>`).join("")}</div>`}; }
+function pickDay(days){ if (MDAY == null || MDAY >= days.length){ const i = days.findIndex(d => d.date === today()); MDAY = i >= 0 ? i : 0; } return MDAY; }
+function dayChips(days, sel, okFn){
+  return `<div class="chips no-print">${days.map((d, i) => `<button type="button" class="chip ${okFn && okFn(i) ? "ok" : ""}" data-mdaysel="${i}" aria-pressed="${i===sel}"><b>Day ${i+1}${okFn && okFn(i) ? '<i class="dot"></i>' : ""}</b><span>${DOW[parseD(d.date).getDay()]} ${fmtShort(d.date)}</span></button>`).join("")}</div>`;
+}
+/* quantities written the way a cook measures */
+const FR = [[0,""],[0.25,"¼"],[1/3,"⅓"],[0.5,"½"],[2/3,"⅔"],[0.75,"¾"],[1,""]];
+function fracTxt(q){ const w = Math.floor(q + 1e-9), f = q - w; let best = FR[0]; FR.forEach(x => { if (Math.abs(x[0] - f) < Math.abs(best[0] - f)) best = x; });
+  const W = w + (best[0] === 1 ? 1 : 0); const s = (W ? String(W) : "") + (best[0] === 1 ? "" : best[1]); return s || "0"; }
+const isEggLine = l => /^Eggs/.test(l.name);
+function cookName(l){ return l.rice ? (l.both ? "Rice (raw) – for lunch & dinner" : "Rice (raw)") : shortName(l.name); }
+function cookQty(l){
+  const u = l.unit || "";
+  if (u === "kg"){ const txt = l.qty < 1 ? (l.qty*1000 < 50 ? Math.round(l.qty*1000) : Math.round(l.qty*200)*5) + " g" : (Math.round(l.qty*100)/100) + " kg";
+    return l.rice ? `${txt} · ${fracTxt(l.qty/0.2)} cups` : txt; }
+  if (isEggLine(l)) return Math.ceil(l.qty - 1e-9) + " pcs";
+  const pc = /\((\d+) pcs\)/.exec(l.name); if (pc && u === "pack") return Math.round(l.qty * +pc[1]) + " pcs";
+  const ft = fracTxt(l.qty), plural = ft !== "1" && !/^[¼⅓½⅔¾]$/.test(ft);
+  return `${ft} ${u.includes("(") ? u : (plural ? (u.endsWith("s") ? u : u + "s") : u)}`;
+}
+function cookPP(l){ if (l.unit === "kg" && (l.prot || l.rice)) return Math.round(l.pp*1000) + " g"; if (isEggLine(l)) return (Math.round(l.pp*10)/10) + " pc"; return ""; }
+function mealNote(ml){ return ml.dish.special === "left" ? "Eat the lunch leftovers. Dinner rice is cooked together with lunch." : ml.dish.special === "none" ? "No dinner cooked today." : ""; }
+
+/* ingredient list of one meal (cook view) */
+function ingTable(ml, showCost){
+  if (!ml.lines.length) return `<div class="small muted" style="padding:4px 0">${esc(mealNote(ml))}</div>`;
+  return (mealNote(ml) ? `<div class="small muted">${esc(mealNote(ml))}</div>` : "") + `<table class="ing">${ml.lines.map(l => `<tr><td>${esc(cookName(l))}${l.short ? ' <span class="tag" style="background:var(--warn-bg);color:var(--warn-ink)">short</span>' : ""}${l.adj ? ' <span class="tag" style="background:var(--warn-bg);color:var(--warn-ink)">adjusted</span>' : ""}</td><td class="q">${esc(cookQty(l))}</td><td class="pp">${cookPP(l) ? esc(cookPP(l)) + "/person" : ""}</td>${showCost ? `<td class="pp">${peso(l.cost)}</td>` : ""}</tr>`).join("")}</table>`;
+}
+const CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z"/><circle cx="12" cy="13" r="4"/></svg>';
+
+/* days view shared by draft and approved plans */
+function daysView(days, opts){
+  const sel = pickDay(days), d = days[sel];
+  CHEF_SRC = {days, label: opts.label};
+  let h = dayChips(days, sel, opts.okFn);
+  h += `<div class="card" style="${opts.okFn && opts.okFn(sel) ? "border:2px solid var(--good);" : ""}">` + opts.dayHead(d, sel) +
+    `<button class="btn primary bigbtn no-print" data-chef="${sel}" style="margin-top:12px">${CAM}Chef card – photo for the cook</button>` +
+    d.meals.map((ml, k) => `<div class="meal-block"><div class="meal-head"><span class="meal-pill">${MEAL_NAME[ml.m]}</span><span class="small muted" style="font-weight:600">${SIZE_LABEL[(d.sizes || opts.sizes)[ml.m]]}${ml.lvl != null && !ml.dish.special ? " · " + LEVELS[ml.lvl].name + " portions" : ""}</span><span class="spacer"></span><b class="num small">${peso(ml.cost)}</b></div>
+      ${opts.dishCtl(d, sel, ml, k)}${ingTable(ml, false)}</div>`).join("") +
+    `<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:600;color:var(--brand)">Show cost of each ingredient</summary>${portionsTable(d)}</details>
+    <div class="daynav no-print"><button class="btn" data-mdaysel="${Math.max(0, sel-1)}" ${sel===0?"disabled":""}>‹ Previous day</button><button class="btn" data-mdaysel="${Math.min(days.length-1, sel+1)}" ${sel===days.length-1?"disabled":""}>Next day ›</button></div></div>`;
+  h += `<div class="card glance"><h2>All days at a glance</h2><p class="hint">Tap a day to open it.</p>${days.map((x, i) => `<div class="list-item" data-mdaysel="${i}" style="${i===sel?"background:var(--brand-soft);":""}"><div class="main"><div class="name">Day ${i+1} · ${fmtLong(x.date)} ${opts.okFn && opts.okFn(i) ? `<span class="tag" style="background:var(--good-bg);color:var(--good-ink)">approved</span>` : ""}</div>
+    <div class="meta">${x.meals.map(ml => `<b>${MEAL_NAME[ml.m][0]}</b> ${esc(ml.dish.n)}`).join(" · ")}</div></div><div class="amt num">${peso(x.total)}</div></div>`).join("")}</div>`;
+  return h;
+}
+
+/* ---------- chef card image ---------- */
+function chefModel(d, i, nDays, label){
+  const sizes = d.sizes || {};
+  return {date: d.date, title: fmtLong(d.date).replace(/, \d{4}$/, ""), sub: `Day ${i+1} of ${nDays} · ${d.persons} ${d.persons===1?"person":"people"}${label ? " · " + label : ""}`,
+    meals: d.meals.map(ml => ({meal: MEAL_NAME[ml.m], size: sizes[ml.m] ? SIZE_LABEL[sizes[ml.m]] : "", lvl: ml.lvl != null && !ml.dish.special ? LEVELS[ml.lvl].name : "", dish: dishLabel(ml.dish), note: mealNote(ml),
+      lines: ml.lines.map(l => ({name: cookName(l), qty: cookQty(l), pp: cookPP(l)}))}))};
+}
+function wrapText(ctx, text, maxW){ const words = String(text).split(" "); const out = []; let cur = "";
+  words.forEach(w => { const t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxW && cur){ out.push(cur); cur = w; } else cur = t; }); if (cur) out.push(cur); return out; }
+function drawChef(model, showPP){
+  const W = 1080, P = 56, F = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+  const cv = document.createElement("canvas"), ctx = cv.getContext("2d");
+  const ops = []; let y = 0;
+  const font = (w, s) => `${w} ${s}px ${F}`;
+  // layout pass
+  y = 250;
+  model.meals.forEach(m => {
+    ops.push({t:"pill", y, m}); y += 64;
+    ctx.font = `700 46px Georgia, "Times New Roman", serif`; const dl = wrapText(ctx, m.dish, W - 2*P); dl.forEach(l => { ops.push({t:"text", y: y + 46, s: l, f: `700 46px Georgia, "Times New Roman", serif`, c:"#0a1a33"}); y += 58; });
+    if (m.note){ ctx.font = font(500, 30); wrapText(ctx, m.note, W - 2*P).forEach(l => { ops.push({t:"text", y: y + 34, s: l, f: font(500, 30), c:"#6b6a66"}); y += 42; }); }
+    y += 10;
+    m.lines.forEach(l => {
+      ctx.font = font(500, 34); const nameW = W - 2*P - (showPP ? 430 : 300);
+      const nl = wrapText(ctx, l.name, nameW); const rowH = Math.max(1, nl.length) * 44 + 18;
+      ops.push({t:"row", y, h: rowH, nl, l}); y += rowH;
+    });
+    y += 34;
+  });
+  const H = y + 120;
+  cv.width = W; cv.height = H;
+  ctx.fillStyle = "#fdfeff"; ctx.fillRect(0, 0, W, H);
+  const gr = ctx.createLinearGradient(0, 0, W, 200); gr.addColorStop(0, "#0a1a33"); gr.addColorStop(0.6, "#15346a"); gr.addColorStop(1, "#1e4a8c"); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, 200); ctx.fillStyle = "#b08d44"; ctx.fillRect(0, 200, W, 6);
+  ctx.fillStyle = "#e9d6a8"; ctx.font = font(700, 28); ctx.fillText("◆  MENU FOR THE COOK", P, 62); ctx.fillStyle = "#fffaf0";
+  ctx.font = `700 64px Georgia, "Times New Roman", serif`; ctx.fillText(model.title, P, 134);
+  ctx.font = font(600, 30); ctx.fillStyle = "#e9d6a8"; ctx.fillText(model.sub, P, 180);
+  ops.forEach(o => {
+    if (o.t === "pill"){ const label = (o.m.meal + (o.m.size ? " · " + o.m.size : "") + (o.m.lvl ? " · " + o.m.lvl : "")).toUpperCase();
+      ctx.font = font(800, 26); const w = ctx.measureText(label).width + 36;
+      ctx.fillStyle = "#f3ead6"; roundRect(ctx, P, o.y, w, 46, 23); ctx.fill(); ctx.strokeStyle = "#d8c398"; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = "#7a5c1e"; ctx.fillText(label, P + 18, o.y + 32); }
+    if (o.t === "text"){ ctx.font = o.f; ctx.fillStyle = o.c; ctx.fillText(o.s, P, o.y); }
+    if (o.t === "row"){ ctx.font = font(500, 34); ctx.fillStyle = "#222"; o.nl.forEach((s, k) => ctx.fillText(s, P, o.y + 40 + k*44));
+      ctx.textAlign = "right"; ctx.font = font(800, 34); ctx.fillStyle = "#111";
+      ctx.fillText(o.l.qty, showPP ? W - P - 190 : W - P, o.y + 40);
+      if (showPP && o.l.pp){ ctx.font = font(500, 26); ctx.fillStyle = "#6b6a66"; ctx.fillText(o.l.pp + "/person", W - P, o.y + 40); }
+      ctx.textAlign = "left"; ctx.strokeStyle = "#dde4ef"; ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(P, o.y + o.h - 4); ctx.lineTo(W - P, o.y + o.h - 4); ctx.stroke(); ctx.setLineDash([]); }
+  });
+  ctx.fillStyle = "#b08d44"; ctx.fillRect(P, H - 86, W - 2*P, 2); ctx.font = font(500, 24); ctx.fillStyle = "#7a8599"; ctx.fillText("Weights are raw, before cooking. · Home Kitchen Budget", P, H - 48);
+  return cv;
+}
+function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function chefText(m, showPP){
+  return [`MENU FOR THE COOK – ${m.title}`, m.sub, ""].concat(...m.meals.map(x => [`${x.meal.toUpperCase()}${x.size ? " (" + x.size + ")" : ""}: ${x.dish}`].concat(x.note ? ["  " + x.note] : [], x.lines.map(l => `  • ${l.name}: ${l.qty}${showPP && l.pp ? " (" + l.pp + "/person)" : ""}`), [""]))).join("\n");
+}
+let CHEF = null;
+function openChef(i){
+  if (!CHEF_SRC) return; const d = CHEF_SRC.days[i]; if (!d) return;
+  CHEF = {model: chefModel(d, i, CHEF_SRC.days.length, CHEF_SRC.label)};
+  paintChef(); $("#dlgChef").showModal();
+}
+function paintChef(){
+  const pp = $("#chefPP").checked; const cv = drawChef(CHEF.model, pp); CHEF.canvas = cv;
+  $("#chefPreview").innerHTML = `<img alt="Chef card for ${esc(CHEF.model.title)}" src="${cv.toDataURL("image/png")}">`;
+}
+function chefFileName(){ return `menu-${CHEF.model.date}.png`; }
+$("#chefPP").addEventListener("change", paintChef);
+$("#chefSave").addEventListener("click", () => { CHEF.canvas.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = chefFileName(); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); toast("Photo saved to Downloads"); }, "image/png"); });
+$("#chefShare").addEventListener("click", () => {
+  CHEF.canvas.toBlob(async b => {
+    const file = new File([b], chefFileName(), {type:"image/png"});
+    try { if (navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:"Menu for the cook"}); return; } } catch(e){ if (e && e.name === "AbortError") return; }
+    $("#chefSave").click(); toast("Sharing not available here – photo saved instead");
+  }, "image/png");
+});
+$("#chefCopy").addEventListener("click", async () => { const t = chefText(CHEF.model, $("#chefPP").checked);
+  try { await navigator.clipboard.writeText(t); toast("Copied – paste it in Messenger or Viber"); } catch(_){ prompt("Copy this text:", t); } });
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-chef]"); if (c){ openChef(+c.dataset.chef); return; }
+  const s = e.target.closest("[data-mseg]"); if (s){ DB.ui.mseg = s.dataset.mseg; save(); render(); window.scrollTo(0, 0); return; }
+  const ds = e.target.closest("[data-mdaysel]"); if (ds && !ds.disabled){ MDAY = +ds.dataset.mdaysel; render(); const card = app.querySelector(".chips"); if (card) card.scrollIntoView({block:"start"}); return; }
+});
+
+/* today's menu on the Home dashboard */
+function todayMenuCard(){
+  const c = DB.menu; if (!c || !c.plans) return "";
+  for (const [t, word] of [[today(), "Today's menu"], [addDays(today(), 1), "Tomorrow's menu"]]){
+  for (const [key, p] of Object.entries(c.plans)){
+    let days = null, label = "";
+    if (p.status === "approved"){ if (t < p.snap.start || t > p.snap.end) continue; days = p.purchased ? actualCalc(p).days : p.snap.days; label = "Approved plan"; }
+    else if (p.days && p.days.some(d => d.date === t)){ days = evalPlan(p).days; label = "Draft plan"; }
+    if (!days) continue;
+    const i = days.findIndex(d => d.date === t); if (i < 0) continue;
+    const d = days[i]; CHEF_SRC = {days, label};
+    return `<div class="card"><div class="row"><h2>${word}</h2><span class="small muted">${label} · Day ${i+1} · ${d.persons} people</span><span class="spacer"></span><button class="btn sm" data-tabgo="menu">Open Menu Plan</button></div>
+      ${d.meals.map(ml => `<div class="list-item" style="padding:7px 2px"><span class="meal-pill" style="min-width:86px;text-align:center">${MEAL_NAME[ml.m]}</span><div class="main"><div class="name">${esc(dishLabel(ml.dish))}</div></div></div>`).join("")}
+      <button class="btn primary bigbtn" data-chef="${i}" style="margin-top:10px">${CAM}Chef card – photo for the cook</button></div>`;
+  }
+  }
+  return "";
+}
+
+load(); render();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>

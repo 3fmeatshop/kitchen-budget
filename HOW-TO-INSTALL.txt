@@ -1,0 +1,11 @@
+HOME KITCHEN BUDGET – install as an app on your phone
+
+1. Put this whole folder on a free website host (for example Netlify or GitHub Pages).
+   On Netlify: sign in, choose "Add new site > Deploy manually", and drag this folder in.
+2. Open the website link on your phone in Chrome.
+3. Tap the menu (three dots) > "Install app" (or "Add to Home screen").
+4. The app icon appears on your home screen. After the first open it works without internet.
+
+Moving your data: your data is saved inside each browser/app separately.
+In the old copy go to Budgets > Download backup, then in the installed app
+go to Budgets > Restore from backup and choose that file.
