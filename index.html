@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a1a33">
+<meta name="theme-color" content="#2563eb">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kitchen Budget">
@@ -14,39 +14,39 @@
 <style>
 :root{
   color-scheme: light;
-  --brand:#15346a; --brand-ink:#fffaf0; --brand-soft:#e7eef9; --brand-deep:#0a1a33;
-  --gold:#b08d44; --gold-soft:#f3ead6; --gold-ink:#7a5c1e;
-  --page:#f2f5fa; --surface:#fdfeff; --surface-2:#e6ecf5;
-  --ink:#0f1626; --ink-2:#47546b; --muted:#7a8599;
-  --line:#dde4ef; --axis:#c2ccdb; --ring:rgba(21,52,106,.10);
-  --series-1:#2a78d6; --series-2:#eb6834; --pace:#898781;
-  --good:#0ca30c; --good-ink:#006300; --warn:#fab219; --warn-ink:#7a5200; --crit:#d03b3b; --crit-ink:#a32020;
-  --good-bg:#e7f2e3; --warn-bg:#f8eed8; --crit-bg:#fbe9e9;
-  --radius:16px; --shadow:0 1px 2px rgba(10,26,51,.06),0 6px 18px rgba(10,26,51,.06);
+  --brand:#2563eb; --brand-ink:#ffffff; --brand-soft:#eaf1fe; --brand-deep:#1e40af;
+  --gold:#2563eb; --gold-soft:#eaf1fe; --gold-ink:#1d4ed8;
+  --page:#f4f6f9; --surface:#ffffff; --surface-2:#eef1f5;
+  --ink:#111827; --ink-2:#4b5563; --muted:#6b7280;
+  --line:#e5e7eb; --axis:#d1d5db; --ring:rgba(17,24,39,.06);
+  --series-1:#2563eb; --series-2:#eb6834; --pace:#898781;
+  --good:#16a34a; --good-ink:#15803d; --warn:#f59e0b; --warn-ink:#92400e; --crit:#dc2626; --crit-ink:#b91c1c;
+  --good-bg:#e8f6ec; --warn-bg:#fef3dc; --crit-bg:#fdecec;
+  --radius:14px; --shadow:0 1px 2px rgba(17,24,39,.05);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme: dark;
-    --brand:#d9b56a; --brand-ink:#1a0f0a; --brand-soft:#1a2640; --brand-deep:#060b16;
-    --gold:#d9b56a; --gold-soft:#2e2517; --gold-ink:#e6c98a;
-    --page:#080d17; --surface:#111a2b; --surface-2:#1a2438;
-    --ink:#eef2f9; --ink-2:#b9c3d4; --muted:#8b96a8;
-    --line:#243049; --axis:#33415c; --ring:rgba(217,181,106,.14);
-    --series-1:#3987e5; --series-2:#d95926; --pace:#898781;
-    --good-ink:#0ca30c; --warn-ink:#fab219; --crit-ink:#e66767;
-    --good-bg:#16301a; --warn-bg:#3a2e12; --crit-bg:#3a1a1a;
+    --brand:#60a5fa; --brand-ink:#0b1220; --brand-soft:#16233a; --brand-deep:#0b1220;
+    --gold:#60a5fa; --gold-soft:#16233a; --gold-ink:#93c5fd;
+    --page:#0b0f17; --surface:#141a24; --surface-2:#1c2431;
+    --ink:#f3f4f6; --ink-2:#c7ccd4; --muted:#9aa3af;
+    --line:#252e3c; --axis:#334155; --ring:rgba(255,255,255,.06);
+    --series-1:#60a5fa; --series-2:#d95926; --pace:#898781;
+    --good-ink:#4ade80; --warn-ink:#fbbf24; --crit-ink:#f87171;
+    --good-bg:#12291b; --warn-bg:#33270f; --crit-bg:#331617;
   }
 }
 :root[data-theme="dark"]{
   color-scheme: dark;
-    --brand:#d9b56a; --brand-ink:#1a0f0a; --brand-soft:#1a2640; --brand-deep:#060b16;
-    --gold:#d9b56a; --gold-soft:#2e2517; --gold-ink:#e6c98a;
-    --page:#080d17; --surface:#111a2b; --surface-2:#1a2438;
-    --ink:#eef2f9; --ink-2:#b9c3d4; --muted:#8b96a8;
-    --line:#243049; --axis:#33415c; --ring:rgba(217,181,106,.14);
-    --series-1:#3987e5; --series-2:#d95926; --pace:#898781;
-    --good-ink:#0ca30c; --warn-ink:#fab219; --crit-ink:#e66767;
-    --good-bg:#16301a; --warn-bg:#3a2e12; --crit-bg:#3a1a1a;
+    --brand:#60a5fa; --brand-ink:#0b1220; --brand-soft:#16233a; --brand-deep:#0b1220;
+    --gold:#60a5fa; --gold-soft:#16233a; --gold-ink:#93c5fd;
+    --page:#0b0f17; --surface:#141a24; --surface-2:#1c2431;
+    --ink:#f3f4f6; --ink-2:#c7ccd4; --muted:#9aa3af;
+    --line:#252e3c; --axis:#334155; --ring:rgba(255,255,255,.06);
+    --series-1:#60a5fa; --series-2:#d95926; --pace:#898781;
+    --good-ink:#4ade80; --warn-ink:#fbbf24; --crit-ink:#f87171;
+    --good-bg:#12291b; --warn-bg:#33270f; --crit-bg:#331617;
 }
 *{box-sizing:border-box}
 html [hidden]{display:none !important}
@@ -196,44 +196,45 @@ nav.tabs button svg{width:20px;height:20px;flex:0 0 20px}
 #dlgChef .bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
 #dlgChef .bar .btn{flex:1 1 140px}
 
-/* ---- luxurious theme ---- */
-.serif,header.top h1,.card h2,.hero .big,.tile .v,.meal-dish,.section-title,dialog h3{font-family:"Playfair Display",Georgia,"Times New Roman",Times,serif}
-header.top{background:linear-gradient(135deg,#0a1a33 0%,#15346a 60%,#1e4a8c 100%);color:#fffaf0;border-bottom:3px solid var(--gold);padding-top:14px;padding-bottom:14px}
-header.top h1{font-size:21px;letter-spacing:.4px;font-weight:700}
-header.top h1::before{content:"";display:inline-block;width:10px;height:10px;transform:rotate(45deg);background:var(--gold);margin-right:10px;vertical-align:3px}
-header.top .sub{color:#e9d6a8;opacity:1;letter-spacing:.3px;margin-top:2px}
-.card h2{font-size:18px;font-weight:700;letter-spacing:.2px}
-.card{border:1px solid var(--line)}
-.tile{border:1px solid var(--line);border-top:3px solid var(--gold)}
-.tile .k{text-transform:uppercase;letter-spacing:.8px;font-size:11px;color:var(--gold-ink)}
-.tile .v{font-weight:700}
-.hero .big{font-weight:700;letter-spacing:.3px}
-.section-title{text-transform:none;letter-spacing:.3px;font-size:18px;color:var(--brand);border-bottom:1px solid var(--gold);padding-bottom:6px}
-.btn{border-radius:999px;border-color:var(--axis);letter-spacing:.2px}
-.btn.primary{background:linear-gradient(135deg,#102b57,#1e4a8c);border-color:var(--gold);color:#fffaf0;box-shadow:0 2px 8px rgba(10,26,51,.25)}
-.fab{background:linear-gradient(135deg,#102b57,#1e4a8c);border:1px solid var(--gold);color:#fffaf0}
-.bigbtn{border-radius:14px}
-nav.tabs{background:var(--surface)}
-nav.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--gold)}
-.seg{background:var(--surface-2);border:1px solid var(--line)}
-.seg button[aria-pressed="true"]{color:var(--brand);box-shadow:inset 0 -2px 0 var(--gold),var(--shadow)}
-.chip{border-color:var(--line)}
-.chip[aria-pressed="true"]{background:linear-gradient(135deg,#102b57,#1e4a8c);border-color:var(--gold)}
-.meal-pill{background:var(--gold-soft);color:var(--gold-ink);border:1px solid rgba(176,141,68,.35)}
-.meal-block{border-color:var(--line);background:linear-gradient(180deg,var(--surface),var(--surface))}
-.meal-dish{font-size:18px}
-.tag.mine{background:var(--gold-soft);color:var(--gold-ink)}
-.bar-cell .b{background:var(--gold)}
-input:focus,select:focus,textarea:focus{outline-color:var(--gold);border-color:var(--gold)}
-.meter .fill{box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+/* ---- clean, simple theme ---- */
+header.top{background:var(--brand);color:#fff;padding:14px 16px}
+header.top h1{font-size:19px;font-weight:700}
+header.top .sub{color:rgba(255,255,255,.85);opacity:1}
+.card{border:1px solid var(--line);box-shadow:var(--shadow)}
+.card h2{font-size:17px;font-weight:700}
+.tile{border:1px solid var(--line);box-shadow:none}
+.tile .k{font-size:12px;color:var(--ink-2);text-transform:none;letter-spacing:0}
+.tile .v{font-size:22px;font-weight:700}
+.section-title{font-size:15px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:700}
+.btn{border-radius:10px;min-height:44px;font-weight:600}
+.btn.sm{min-height:36px;border-radius:9px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:active{filter:brightness(.92)}
+.fab{background:var(--brand);color:#fff;border:0}
+input,select,textarea{min-height:44px;border-radius:10px;font-size:16px}
+nav.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+.seg{background:var(--surface-2);border:0}
+.seg button{min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(17,24,39,.12)}
+.chip{border-color:var(--line);min-width:70px;padding:8px 10px}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.meal-pill{background:var(--brand-soft);color:var(--brand-deep);border:0}
+.meal-block{background:var(--surface)}
+.meal-dish{font-size:17px;font-weight:700}
+.tag.mine{background:var(--brand-soft);color:var(--brand-deep)}
+.bar-cell .b{background:var(--brand)}
+.list-item{min-height:52px}
 @media (max-width:760px){
-  nav.tabs{background:var(--brand-deep);border-top:2px solid var(--gold)}
-  nav.tabs button{color:#d9c9ad}
-  nav.tabs button[aria-selected="true"]{color:#f3dfa8;border-top-color:var(--gold);background:rgba(217,181,106,.12)}
+  nav.tabs{background:var(--surface);border-top:1px solid var(--line)}
+  nav.tabs button{color:var(--muted);font-size:11px}
+  nav.tabs button[aria-selected="true"]{color:var(--brand);border-top-color:transparent;background:transparent}
+  nav.tabs button[aria-selected="true"] svg{background:var(--brand-soft);border-radius:999px;padding:3px 14px;width:52px;height:28px;box-sizing:border-box}
+  .card{padding:14px;border-radius:14px}
+  .tiles{grid-template-columns:1fr 1fr;gap:10px}
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .btn.primary,:root:not([data-theme="light"]) .fab{color:#fffaf0}
-  :root:not([data-theme="light"]) .section-title{color:var(--gold)}
+  :root:not([data-theme="light"]) header.top{background:#16233a}
+  :root:not([data-theme="light"]) .btn.primary,:root:not([data-theme="light"]) .fab{color:#0b1220}
 }
 
 @media (max-width:520px){
@@ -1533,7 +1534,7 @@ function drawChef(model, showPP){
   y = 250;
   model.meals.forEach(m => {
     ops.push({t:"pill", y, m}); y += 64;
-    ctx.font = `700 46px Georgia, "Times New Roman", serif`; const dl = wrapText(ctx, m.dish, W - 2*P); dl.forEach(l => { ops.push({t:"text", y: y + 46, s: l, f: `700 46px Georgia, "Times New Roman", serif`, c:"#0a1a33"}); y += 58; });
+    ctx.font = font(800, 44); const dl = wrapText(ctx, m.dish, W - 2*P); dl.forEach(l => { ops.push({t:"text", y: y + 44, s: l, f: font(800, 44), c:"#111827"}); y += 56; });
     if (m.note){ ctx.font = font(500, 30); wrapText(ctx, m.note, W - 2*P).forEach(l => { ops.push({t:"text", y: y + 34, s: l, f: font(500, 30), c:"#6b6a66"}); y += 42; }); }
     y += 10;
     m.lines.forEach(l => {
@@ -1545,23 +1546,23 @@ function drawChef(model, showPP){
   });
   const H = y + 120;
   cv.width = W; cv.height = H;
-  ctx.fillStyle = "#fdfeff"; ctx.fillRect(0, 0, W, H);
-  const gr = ctx.createLinearGradient(0, 0, W, 200); gr.addColorStop(0, "#0a1a33"); gr.addColorStop(0.6, "#15346a"); gr.addColorStop(1, "#1e4a8c"); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, 200); ctx.fillStyle = "#b08d44"; ctx.fillRect(0, 200, W, 6);
-  ctx.fillStyle = "#e9d6a8"; ctx.font = font(700, 28); ctx.fillText("◆  MENU FOR THE COOK", P, 62); ctx.fillStyle = "#fffaf0";
-  ctx.font = `700 64px Georgia, "Times New Roman", serif`; ctx.fillText(model.title, P, 134);
-  ctx.font = font(600, 30); ctx.fillStyle = "#e9d6a8"; ctx.fillText(model.sub, P, 180);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#2563eb"; ctx.fillRect(0, 0, W, 200);
+  ctx.fillStyle = "#dbe7ff"; ctx.font = font(700, 28); ctx.fillText("MENU FOR THE COOK", P, 62); ctx.fillStyle = "#ffffff";
+  ctx.font = font(800, 62); ctx.fillText(model.title, P, 134);
+  ctx.font = font(600, 30); ctx.fillStyle = "#dbe7ff"; ctx.fillText(model.sub, P, 180);
   ops.forEach(o => {
     if (o.t === "pill"){ const label = (o.m.meal + (o.m.size ? " · " + o.m.size : "") + (o.m.lvl ? " · " + o.m.lvl : "")).toUpperCase();
       ctx.font = font(800, 26); const w = ctx.measureText(label).width + 36;
-      ctx.fillStyle = "#f3ead6"; roundRect(ctx, P, o.y, w, 46, 23); ctx.fill(); ctx.strokeStyle = "#d8c398"; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = "#7a5c1e"; ctx.fillText(label, P + 18, o.y + 32); }
+      ctx.fillStyle = "#eaf1fe"; roundRect(ctx, P, o.y, w, 46, 23); ctx.fill(); ctx.fillStyle = "#1e40af"; ctx.fillText(label, P + 18, o.y + 32); }
     if (o.t === "text"){ ctx.font = o.f; ctx.fillStyle = o.c; ctx.fillText(o.s, P, o.y); }
     if (o.t === "row"){ ctx.font = font(500, 34); ctx.fillStyle = "#222"; o.nl.forEach((s, k) => ctx.fillText(s, P, o.y + 40 + k*44));
       ctx.textAlign = "right"; ctx.font = font(800, 34); ctx.fillStyle = "#111";
       ctx.fillText(o.l.qty, showPP ? W - P - 190 : W - P, o.y + 40);
       if (showPP && o.l.pp){ ctx.font = font(500, 26); ctx.fillStyle = "#6b6a66"; ctx.fillText(o.l.pp + "/person", W - P, o.y + 40); }
-      ctx.textAlign = "left"; ctx.strokeStyle = "#dde4ef"; ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(P, o.y + o.h - 4); ctx.lineTo(W - P, o.y + o.h - 4); ctx.stroke(); ctx.setLineDash([]); }
+      ctx.textAlign = "left"; ctx.strokeStyle = "#e5e7eb"; ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(P, o.y + o.h - 4); ctx.lineTo(W - P, o.y + o.h - 4); ctx.stroke(); ctx.setLineDash([]); }
   });
-  ctx.fillStyle = "#b08d44"; ctx.fillRect(P, H - 86, W - 2*P, 2); ctx.font = font(500, 24); ctx.fillStyle = "#7a8599"; ctx.fillText("Weights are raw, before cooking. · Home Kitchen Budget", P, H - 48);
+  ctx.fillStyle = "#e5e7eb"; ctx.fillRect(P, H - 86, W - 2*P, 2); ctx.font = font(500, 24); ctx.fillStyle = "#6b7280"; ctx.fillText("Weights are raw, before cooking. · Home Kitchen Budget", P, H - 48);
   return cv;
 }
 function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
