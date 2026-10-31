@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+def runNo = Integer.parseInt(System.getenv("GITHUB_RUN_NUMBER") ?: "1")
+
+android {
+    namespace 'com.threefmeatshop.kitchenbudget'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.threefmeatshop.kitchenbudget"
+        minSdk 29
+        targetSdk 34
+        versionCode runNo
+        versionName "1." + runNo
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("kitchen.keystore")
+            storePassword "kitchen3f"
+            keyAlias "kitchen"
+            keyPassword "kitchen3f"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}

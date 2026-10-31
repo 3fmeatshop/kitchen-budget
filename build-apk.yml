@@ -1,0 +1,73 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Put the web app inside the Android app
+        run: |
+          mkdir -p android/app/src/main/assets/www
+          cp index.html android/app/src/main/assets/www/index.html
+          cp icon-192.png icon-512.png android/app/src/main/assets/www/ 2>/dev/null || true
+
+      - name: Make sure the signing key is there
+        run: |
+          if [ ! -f android/app/kitchen.keystore ]; then
+            echo "Signing key missing - creating one"
+            keytool -genkeypair -keystore android/app/kitchen.keystore -alias kitchen -keyalg RSA -keysize 2048 \
+              -validity 10000 -storepass kitchen3f -keypass kitchen3f \
+              -dname "CN=3F Meatshop, O=3F Meatshop, L=Santa Ana, ST=Cagayan, C=PH"
+          fi
+
+      - name: Build the APK
+        working-directory: android
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Sign and check the APK
+        run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          echo "Using build tools: $BT"
+          IN=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          echo "Built file: $IN"
+          "$BT/zipalign" -f -p 4 "$IN" aligned.apk
+          "$BT/apksigner" sign --ks android/app/kitchen.keystore --ks-key-alias kitchen \
+            --ks-pass pass:kitchen3f --key-pass pass:kitchen3f --out KitchenBudget.apk aligned.apk
+          "$BT/apksigner" verify --verbose KitchenBudget.apk
+          ls -l KitchenBudget.apk
+
+      - name: Keep a copy in this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: KitchenBudget-apk
+          path: KitchenBudget.apk
+
+      - name: Publish it on the Releases page
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.${{ github.run_number }}
+          name: Kitchen Budget v1.${{ github.run_number }}
+          body: Download KitchenBudget.apk below and tap it on your phone to install or update.
+          files: KitchenBudget.apk
+          make_latest: true

@@ -237,6 +237,28 @@ nav.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var
   :root:not([data-theme="light"]) .btn.primary,:root:not([data-theme="light"]) .fab{color:#0b1220}
 }
 
+/* ---- friendlier phone layout ---- */
+html,body{font-size:16px}
+.home-hero{text-align:left}
+.mini-select{width:auto;max-width:100%;min-height:36px;font-size:13px;padding:4px 10px;border-radius:999px;background:var(--surface-2);border:0;color:var(--ink-2);margin-bottom:10px}
+.hl{font-size:14px;color:var(--ink-2);font-weight:600}
+.hbig{font-size:40px;font-weight:800;line-height:1.1;margin:2px 0}
+.hsub{color:var(--ink-2);font-size:14px}
+.meal-pill{display:inline-block;min-width:86px;text-align:center}
+.safe{margin-top:12px;background:var(--brand-soft);color:var(--brand-deep);border-radius:12px;padding:10px 12px;font-size:14px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.qa{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 4px;font-weight:600;font-size:12.5px;color:var(--ink);cursor:pointer;min-height:84px}
+.qa svg{width:26px;height:26px;color:var(--brand);background:var(--brand-soft);border-radius:12px;padding:6px;box-sizing:content-box}
+.qa:active{transform:scale(.97)}
+details.more > summary{cursor:pointer;list-style:none;padding:2px 0}
+details.more > summary::-webkit-details-marker{display:none}
+details.more > summary::after{content:"Show ›";float:right;color:var(--brand);font-weight:700;font-size:14px}
+details.more[open] > summary::after{content:"Hide";}
+details.dayedit > summary{cursor:pointer;color:var(--brand);font-weight:700;font-size:14px;padding:8px 0;list-style:none}
+details.dayedit > summary::-webkit-details-marker{display:none}
+.hint{font-size:13px}
+@media (max-width:420px){ .quick{gap:8px} .qa{font-size:11.5px;min-height:78px} .hbig{font-size:36px} }
+
 @media (max-width:520px){
   .fgrid{grid-template-columns:1fr}
   .hero .big{font-size:28px}
@@ -422,6 +444,9 @@ const sum = (arr, f) => arr.reduce((a, x) => a + f(x), 0);
 function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("show"), 2200); }
 function findProduct(name){ const n = String(name||"").trim().toLowerCase(); return DB.products.find(p => p.name.toLowerCase() === n); }
 function download(name, text, type){
+  if (window.AndroidBridge){ // inside the Android app: save straight to Downloads
+    try { AndroidBridge.saveFile(name, btoa(unescape(encodeURIComponent(text))), type.split(";")[0]); return; } catch(e){}
+  }
   const blob = new Blob([text], {type});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
@@ -616,7 +641,7 @@ function catOptions(sel, withAll){
 function render(){
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === DB.ui.tab));
   const t = DB.ui.tab;
-  document.getElementById("fab").style.display = t === "menu" ? "none" : "";
+  document.getElementById("fab").style.display = t === "exp" ? "" : "none";
   if (t === "dash") viewDash(); else if (t === "menu") viewMenu(); else if (t === "exp") viewExpenses(); else if (t === "reports") viewReports();
   else if (t === "products") viewProducts(); else viewBudgets();
   const cb = currentBudget();
@@ -649,50 +674,58 @@ function viewDash(){
   if (!al.length) al.push(["good", st.upcoming ? `<b>This budget starts on ${fmtLong(b.start)}.</b>` : st.done ? `<b>Finished within budget.</b> You saved ${peso(st.remaining)}.` : `<b>On track.</b> You can spend up to ${peso(st.safeDaily)} a day and still stay within budget.`]);
 
   const top = itemRows(st.ex).slice(0, 5);
+  const over = st.remaining < 0;
+  const QA = (act, icon, label) => `<button class="qa" ${act}>${icon}<span>${label}</span></button>`;
+  const NAV = id => document.querySelector(`nav.tabs button[data-tab="${id}"] svg`).outerHTML;
   app.innerHTML = `
-  <div class="filters no-print"><label style="flex:3 1 260px">Budget period<select data-f="dashBudget">${budgetOptions(b.id)}</select></label>
-    <button class="btn" data-act="newBudget">New budget</button></div>
-  <div class="card">
-    <div class="hero">
-      <div><div class="k small muted" style="font-weight:600">${TYPE_LABEL[b.type]} budget${b.label?" · "+esc(b.label):""} · ${fmtRange(b.start,b.end)}</div>
-      <div class="big num">${peso(st.spent)}</div><div class="of">spent of <b class="num">${peso(b.amount)}</b> · ${pctTxt} used</div></div>
-      <div>${badge(st.status)}</div>
-    </div>
-    <div class="meter" role="img" aria-label="${pctTxt} of budget used; ${Math.round(pacePos)}% of the period has passed">
-      <div class="fill" style="width:${Math.min(100, st.pct*100)}%;background:${fillColor}"></div>
-      ${st.upcoming ? "" : `<div class="pace" style="left:calc(${pacePos}% - 1px)" title="Expected by today"></div>`}
-    </div>
-    <div class="meter-legend"><span>${st.upcoming ? "Not started yet" : st.done ? "Period finished" : `Day ${st.elapsed} of ${st.days} · black mark = expected by today (${peso(st.pace)})`}</span><span>${st.remaining >= 0 ? peso(st.remaining)+" left" : peso(-st.remaining)+" over"}</span></div>
+  <div class="card home-hero">
+    <select class="mini-select no-print" data-f="dashBudget" aria-label="Budget period">${budgetOptions(b.id)}</select>
+    <div class="hl">${over ? "Over budget by" : "Budget left"}</div>
+    <div class="hbig num" style="color:${over ? "var(--crit-ink)" : "var(--ink)"}">${peso(Math.abs(st.remaining))}</div>
+    <div class="hsub">Spent <b class="num">${peso(st.spent)}</b> of <b class="num">${peso(b.amount)}</b></div>
+    <div class="meter"><div class="fill" style="width:${Math.min(100, st.pct*100)}%;background:${fillColor}"></div>${st.upcoming ? "" : `<div class="pace" style="left:calc(${pacePos}% - 1px)"></div>`}</div>
+    <div class="row" style="justify-content:space-between">${badge(st.status)}<span class="small muted">${st.upcoming ? "Starts " + fmtShort(b.start) : st.done ? "Finished" : `Day ${st.elapsed} of ${st.days}`}</span></div>
+    ${st.done || st.upcoming ? "" : `<div class="safe">You can spend <b class="num">${peso(st.safeDaily)}</b> a day for the next ${st.daysLeft} day${st.daysLeft===1?"":"s"}</div>`}
+  </div>
+  <div class="quick no-print">
+    ${QA('data-act="addExp"', ICON.plus, "Add expense")}
+    ${QA('data-tabgo="menu"', NAV("menu"), "Menu plan")}
+    ${QA('data-act="goShop"', NAV("products"), "Shopping list")}
+    ${QA('data-tabgo="reports"', NAV("reports"), "Reports")}
   </div>
   ${todayMenuCard()}
-  <div class="tiles">
-    <div class="tile"><div class="k">${st.remaining >= 0 ? "Remaining" : "Over budget by"}</div><div class="v num" style="color:${st.remaining<0?"var(--crit-ink)":"inherit"}">${peso(Math.abs(st.remaining))}</div><div class="s">${st.daysLeft} day${st.daysLeft===1?"":"s"} left</div></div>
-    <div class="tile"><div class="k">Safe to spend per day</div><div class="v num">${peso(st.safeDaily)}</div><div class="s">Daily budget ${peso(st.daily)}</div></div>
-    <div class="tile"><div class="k">Average spent per day</div><div class="v num">${peso(st.avg)}</div><div class="s">${st.ex.length} purchase${st.ex.length===1?"":"s"}</div></div>
-    <div class="tile"><div class="k">Projected total</div><div class="v num" style="color:${st.projected>b.amount?"var(--crit-ink)":"inherit"}">${peso(st.projected)}</div><div class="s">${st.projected>b.amount ? "Over budget at this pace" : "Within budget at this pace"}</div></div>
-  </div>
-  <div class="card"><h2>Alerts</h2>${al.map(a => `<div class="alert ${a[0]}">${ICON[a[0]]}<div>${a[1]}</div></div>`).join("")}</div>
-  <div class="grid g2">
-    <div class="card"><h2>Running total vs budget</h2>
-      <div class="legend"><span><i class="sw" style="background:var(--series-1)"></i>Actual spending</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--pace) 0 6px,transparent 6px 10px)"></i>Expected pace</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--crit) 0 2px,transparent 2px 5px)"></i>Budget limit</span></div>
-      <div class="chart" id="chCum"></div></div>
-    <div class="card"><h2>Daily spending</h2>
-      <div class="legend"><span><i class="sw box" style="background:var(--series-1)"></i>Within daily budget</span><span><i class="sw box" style="background:var(--crit)"></i>Above daily budget</span></div>
-      <div class="chart" id="chDaily"></div></div>
-  </div>
-  <div class="grid g2">
-    <div class="card"><h2>Spending by category</h2>${categoryTable(st.ex)}</div>
-    <div class="card"><h2>Top 5 items</h2>${top.length ? `<div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Amount</th></tr></thead><tbody>${top.map(r => `<tr><td>${esc(r.name)}<div class="small muted">${esc(r.cat)}</div></td><td class="r">${qtyFmt(r.qty)} ${esc(r.unit)}</td><td class="r">${peso(r.amt)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No expenses in this period yet.</div>`}</div>
-  </div>
-  ${recentCard(st.ex)}`;
+  ${al.filter(a => a[0] !== "good").map(a => `<div class="alert ${a[0]}">${ICON[a[0]]}<div>${a[1]}</div></div>`).join("")}
+  ${recentCard(st.ex, 3)}
+  <details class="card more" id="moreDash"><summary><b>More details and charts</b><span class="small muted"> · averages, charts, categories</span></summary>
+    <div class="tiles" style="margin-top:12px">
+      <div class="tile"><div class="k">Daily budget</div><div class="v num">${peso(st.daily)}</div></div>
+      <div class="tile"><div class="k">Average spent per day</div><div class="v num">${peso(st.avg)}</div></div>
+      <div class="tile"><div class="k">Projected total</div><div class="v num" style="color:${st.projected>b.amount?"var(--crit-ink)":"inherit"}">${peso(st.projected)}</div></div>
+      <div class="tile"><div class="k">Purchases</div><div class="v num">${st.ex.length}</div></div>
+    </div>
+    <h2 style="margin-top:10px">Running total vs budget</h2>
+    <div class="legend"><span><i class="sw" style="background:var(--series-1)"></i>Actual</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--pace) 0 6px,transparent 6px 10px)"></i>Expected</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,var(--crit) 0 2px,transparent 2px 5px)"></i>Limit</span></div>
+    <div class="chart" id="chCum"></div>
+    <h2 style="margin-top:14px">Spending per day</h2>
+    <div class="legend"><span><i class="sw box" style="background:var(--series-1)"></i>Within daily budget</span><span><i class="sw box" style="background:var(--crit)"></i>Above</span></div>
+    <div class="chart" id="chDaily"></div>
+    <h2 style="margin-top:14px">By category</h2>${categoryTable(st.ex)}
+    <h2 style="margin-top:14px">Top 5 items</h2>${top.length ? top.map(r => `<div class="list-item"><div class="main"><div class="name">${esc(r.name)}</div><div class="meta">${qtyFmt(r.qty)} ${esc(r.unit)}</div></div><div class="amt num">${peso(r.amt)}</div></div>`).join("") : `<div class="empty">No expenses yet.</div>`}
+    <div class="row" style="margin-top:12px"><button class="btn sm" data-act="newBudget">New budget</button></div>
+  </details>`;
+  const drawCharts = () => {
   drawCumulative($("#chCum"), b, st);
   const items = []; for (let i = 0; i < st.days; i++){ const d = addDays(b.start, i); const v = sum(st.ex.filter(e => e.date === d), total);
     items.push({label: fmtShort(d), tipLabel: fmtLong(d), value: v, over: v > st.daily + 0.004}); }
   drawBars($("#chDaily"), items, {ref: st.daily, refLabel: "Daily budget", aria: "Spending per day compared with the daily budget"});
+  };
+  const md = $("#moreDash");
+  if (UI.moreDash){ md.open = true; drawCharts(); }
+  md.addEventListener("toggle", () => { UI.moreDash = md.open; if (md.open) drawCharts(); });
 }
 
-function recentCard(ex){
-  const r = ex.slice().sort((a,b) => (b.date+b.id).localeCompare(a.date+a.id)).slice(0, 6);
+function recentCard(ex, n){
+  const r = ex.slice().sort((a,b) => (b.date+b.id).localeCompare(a.date+a.id)).slice(0, n || 6);
   return `<div class="card"><div class="row"><h2>Recent expenses</h2><span class="spacer"></span><button class="btn sm" data-tabgo="exp">See all</button></div>${
     r.length ? r.map(expRow).join("") : `<div class="empty">No expenses yet. Tap <b>Add expense</b> to record what you bought.</div>`}</div>`;
 }
@@ -915,6 +948,8 @@ app.addEventListener("click", e => {
   if (a === "newBudget") openBudget();
   else if (a === "tipidBudget") openBudget(null, {type:"biweekly", start:"2026-11-01", end:"2026-11-14", amount:11908.30, label:"Tipid meal plan"});
   else if (a === "newProduct") openProduct();
+  else if (a === "addExp") openExpense();
+  else if (a === "goShop"){ DB.ui.tab = "menu"; DB.ui.mseg = "shop"; save(); render(); window.scrollTo(0,0); }
   else if (a === "toggleItems"){ UI.rep.allItems = !UI.rep.allItems; render(); }
   else if (a === "print") window.print();
   else if (a === "csv") exportCSV(applyFilters(UI.rep));
@@ -1177,9 +1212,8 @@ function viewMenu(){
   const existing = c.plans[per.key];
   const approved = existing && existing.status === "approved";
   const srcOpts = budgetsSorted().map(b => { const p = c.plans[b.id]; return `<option value="${b.id}" ${c.src===b.id?"selected":""}>${esc(budgetName(b))} · ${peso0(b.amount)}${p && p.status==="approved" ? " · APPROVED" : ""}</option>`; }).join("") + `<option value="custom" ${isCustom?"selected":""}>Custom amount and dates</option>`;
-  let h = `<div class="card no-print"><h2>Menu plan</h2><p class="hint">Pick a budget. Edit the draft freely, then tap <b>Approve plan &amp; buy</b> when you shop.</p>
-    <div class="filters" style="margin-bottom:0">
-      <label style="flex:3 1 260px">Budget<select data-m="src">${srcOpts}</select></label>
+  let h = `<div class="card no-print"><div class="filters" style="margin-bottom:0">
+      <label style="flex:3 1 260px">Menu for budget<select data-m="src">${srcOpts}</select></label>
       ${isCustom ? `<label>Amount (₱)<input type="number" min="1" step="any" inputmode="decimal" data-m="amount" value="${esc(c.amount)}" placeholder="e.g. 5000"></label>
       <label>Start date<input type="date" data-m="start" value="${esc(c.start)}"></label>
       <label>Number of days<input type="number" min="1" max="62" data-m="days" value="${esc(c.days)}"></label>` : ""}
@@ -1196,9 +1230,9 @@ function viewMenu(){
   const sizeSel = m => `<label>${MEAL_NAME[m]} size<select data-msize="${m}">${["light","medium","heavy"].map(s => `<option value="${s}" ${c.sizes[m]===s?"selected":""}>${SIZE_LABEL[s]}</option>`).join("")}</select></label>`;
   const nLocked = draft.days.filter(d => d.locked).length;
   h += `<div class="card"><div class="row" style="margin-bottom:10px"><span class="badge warn">${ICON.edit}Draft · not yet bought</span>${nLocked ? `<span class="badge good">${ICON.good}${nLocked} of ${draft.days.length} days approved</span>` : ""}<span class="spacer"></span><button class="btn primary no-print" data-act="menuApprove">Approve plan &amp; buy</button></div>
-    <div class="alert ${st}">${ICON[st]}<div>${st === "good" ? `<b>Fits the plan target.</b> Menu cost ${peso(ev.total)}, target ${peso(tgt)} (${peso(diffT)} left).`
-      : st === "warn" ? `<b>Above your plan target by ${peso(-diffT)}</b>, but still within the budget of ${peso(per.amount)}. Swap a dish for a cheaper one or tap Auto-fit.`
-      : `<b>Over the budget by ${peso(-diffB)}.</b> Swap dishes for cheaper ones, lower the portions, or tap Auto-fit.`}</div></div>
+    <div class="alert ${st}">${ICON[st]}<div>${st === "good" ? `<b>Fits your budget.</b> ${peso(ev.total)} of ${peso(tgt)} · ${peso(diffT)} left`
+      : st === "warn" ? `<b>${peso(-diffT)} above your target</b> but within budget. Pick cheaper dishes or tap “New menu ideas”.`
+      : `<b>Over budget by ${peso(-diffB)}.</b> Pick cheaper dishes, or open Settings › Auto-fit.`}</div></div>
     ${ev.missing ? `<div class="alert warn">${ICON.warn}<div>Some ingredients are not in your product list, so the original 3F prices were used.</div></div>` : ""}
     <div class="small" style="display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--ink-2);margin-top:8px">
       <span>Budget <b class="num" style="color:var(--ink)">${peso(per.amount)}</b></span>${adj ? `<span>Target <b class="num" style="color:var(--ink)">${peso(tgt)}</b></span>` : ""}
@@ -1228,16 +1262,19 @@ function viewMenu(){
   } else if (seg.cur === "shop"){
     h += shopTable(ev.shop, ev.total, true);
   } else {
-    h += `<div class="row no-print" style="margin:-4px 0 10px"><button class="btn sm" data-act="menuShuffle">Make another menu</button><button class="btn sm" data-act="menuFit">Auto-fit to target</button><span class="spacer"></span><span class="small muted">Daily target ${peso(dailyT)}</span></div>`;
+    h += `<div class="row no-print" style="margin:-4px 0 10px"><button class="btn sm" data-act="menuShuffle">${ICON.repeat.replace('<svg','<svg style="width:16px;height:16px;vertical-align:-3px"')} New menu ideas</button><span class="spacer"></span><span class="small muted">Approved days stay the same</span></div>`;
     h += daysView(ev.days, {label:"Draft", sizes:c.sizes, okFn: i => !!draft.days[i].locked,
       dayHead: (d, i) => { const dd = draft.days[i], dv = dailyT - d.total, lk = !!dd.locked;
         return `<div class="row"><h2 style="margin:0">Day ${i+1} · ${fmtLong(d.date)}</h2>${fromTag(dd, draft.days)}${lk ? `<span class="badge good" style="font-size:12px;padding:3px 8px">${ICON.good}Day approved</span>` : ""}<span class="spacer"></span><b class="num" style="font-size:18px">${peso(d.total)}</b></div>
-        <div class="small" style="color:${dv<0?"var(--crit-ink)":"var(--good-ink)"};font-weight:600;margin-top:2px">${dv<0?peso(-dv)+" over":peso(dv)+" under"} the daily target</div>
-        <div class="row no-print" style="margin-top:10px">${lk
-          ? `<span class="small muted" style="font-weight:600">${d.persons} ${d.persons===1?"person":"people"} · ${LEVELS[dd.lvl].name} portions</span>`
-          : `<label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">People <input type="number" min="1" max="50" inputmode="numeric" data-mday="${d.date}" value="${d.persons}" style="width:70px;min-height:36px;padding:4px 8px"></label>
-          <label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">Portions <select data-mlvl="${d.date}" style="width:auto;min-height:36px;padding:4px 8px">${LEVELS.map((L, li) => `<option value="${li}" ${li===dd.lvl?"selected":""}>${L.name}</option>`).join("")}</select></label>`}
-          <span class="spacer"></span>${shiftSelect(draft.days, i)}${lk ? `<button class="btn sm" data-unlockday="${d.date}">Unlock day</button>` : `<button class="btn sm" data-lockday="${d.date}" style="border-color:var(--good);color:var(--good-ink)">${ICON.good.replace('<svg','<svg style="width:16px;height:16px;vertical-align:-3px"')} Approve day</button>`}</div>`; },
+        <div class="small" style="color:${dv<0?"var(--crit-ink)":"var(--good-ink)"};font-weight:600;margin-top:2px">${dv<0?peso(-dv)+" over":peso(dv)+" under"} the daily budget of ${peso(dailyT)}</div>
+        <div class="row no-print" style="margin-top:10px;align-items:center">
+          ${lk ? `<span class="small muted" style="font-weight:600">${d.persons} ${d.persons===1?"person":"people"} · ${LEVELS[dd.lvl].name} portions</span>` : `<span class="small muted" style="font-weight:600">${d.persons} ${d.persons===1?"person":"people"} · ${LEVELS[dd.lvl].name} portions</span>`}
+          <span class="spacer"></span>${lk ? `<button class="btn sm" data-unlockday="${d.date}">Unlock day</button>` : `<button class="btn sm" data-lockday="${d.date}" style="border-color:var(--good);color:var(--good-ink)">${ICON.good.replace('<svg','<svg style="width:16px;height:16px;vertical-align:-3px"')} Approve day</button>`}</div>
+        <details class="dayedit no-print" data-dayedit ${window.DAYEDIT ? "open" : ""}><summary>Change people, portions or move this day ›</summary>
+          <div class="row" style="margin:4px 0 6px">${lk ? `<span class="small muted">Unlock the day to change it.</span>` : `<label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">People <input type="number" min="1" max="50" inputmode="numeric" data-mday="${d.date}" value="${d.persons}" style="width:80px"></label>
+          <label class="small muted" style="display:flex;align-items:center;gap:6px;font-weight:600">Portions <select data-mlvl="${d.date}" style="width:auto">${LEVELS.map((L, li) => `<option value="${li}" ${li===dd.lvl?"selected":""}>${L.name}</option>`).join("")}</select></label>`}</div>
+          <div class="row">${shiftSelect(draft.days, i)}</div>
+        </details></div>`; },
       dishCtl: (d, i, ml) => { const dd = draft.days[i];
         return dd.locked ? `<div class="meal-dish">${esc(dishLabel(ml.dish))}</div>` : `<div class="no-print">${dishSelect(dd, ml.m, d.persons, LEVELS[ml.lvl].k, d.sizes)}</div><div class="meal-dish" style="display:none">${esc(dishLabel(ml.dish))}</div>`; }});
   }
@@ -1284,18 +1321,17 @@ function approvedView(p, per){
   const cats = [...new Set(A.rows.map(r => r.cat))].sort((a,b) => DB.cats.indexOf(a) - DB.cats.indexOf(b));
   const inp = (attr, i, v) => `<input type="number" min="0" step="any" inputmode="decimal" data-${attr}="${i}" value="${Math.round(v*1000)/1000}" style="width:92px;min-height:34px;padding:4px 8px;text-align:right">`;
   let h = `<div class="card">
-    <div class="row"><h2>Approved menu plan</h2><span class="badge good" style="margin-left:6px">${ICON.good}Approved · locked</span>${bought ? `<span class="badge good">${ICON.good}Actual purchase saved</span>` : `<span class="badge warn">${ICON.warn}Actual purchase not entered</span>`}</div>
-    <p class="hint" style="margin-top:6px">Approved on ${fmtLong(p.approvedOn)}. The menu is final. ${bought ? `Costs and portions below follow what you actually bought (saved ${fmtLong(p.purchased)}).` : `After buying, enter the actual quantities and prices in <b>Actual purchase</b> below.`}</p>
-    ${bought ? (left < 0 ? `<div class="alert crit">${ICON.crit}<div><b>Actual purchase is over the budget by ${peso(-left)}.</b></div></div>` : "") +
-      (A.shortRows.length ? `<div class="alert warn">${ICON.warn}<div><b>${A.shortRows.length} item${A.shortRows.length===1?" was":"s were"} bought short or not at all.</b> Portions on the affected days are reduced to match what you bought (marked “short”).</div></div>` : `<div class="alert good">${ICON.good}<div><b>Everything on the list was bought.</b></div></div>`)
-      : `<div class="alert warn">${ICON.warn}<div><b>Next step:</b> enter what you actually bought — change the quantity or price only where it differs — then tap <b>Save actual purchase</b>.</div></div>`}
-    <div class="tiles" style="margin:12px 0 0">
-      <div class="tile"><div class="k">Budget</div><div class="v num">${peso(s.amount)}</div><div class="s">${fmtRange(s.start, s.end)}</div></div>
-      <div class="tile"><div class="k">Planned cost</div><div class="v num">${peso(s.total)}</div><div class="s">Approved shopping list</div></div>
-      <div class="tile"><div class="k">Actual purchase</div><div class="v num">${peso(A.total)}</div><div class="s" style="color:${diffPlan>0.004?"var(--crit-ink)":diffPlan<-0.004?"var(--good-ink)":"inherit"}">${Math.abs(diffPlan) < 0.005 ? "Same as plan" : `${peso(Math.abs(diffPlan))} ${diffPlan > 0 ? "more" : "less"} than plan`}${bought ? "" : " · not saved yet"}</div></div>
-      <div class="tile"><div class="k">${left >= 0 ? "Budget left" : "Over budget by"}</div><div class="v num" style="color:${left<0?"var(--crit-ink)":"var(--good-ink)"}">${peso(Math.abs(left))}</div><div class="s">${bought ? "After actual purchase" : "Based on plan"} · all spending in period ${peso(actualPeriod)}</div></div>
-    </div>
-    <div class="row no-print" style="margin-top:12px"><button class="btn" data-act="print">Print menu</button><span class="spacer"></span><button class="btn sm danger" data-act="menuUnapprove">Cancel approval</button></div>
+    <div class="row"><span class="badge good">${ICON.good}Approved plan</span>${bought ? `<span class="badge good">${ICON.good}Purchase saved</span>` : ""}</div>
+    ${bought ? (left < 0 ? `<div class="alert crit" style="margin-top:10px">${ICON.crit}<div><b>Over budget by ${peso(-left)}.</b></div></div>` : "") +
+      (A.shortRows.length ? `<div class="alert warn" style="margin-top:10px">${ICON.warn}<div><b>${A.shortRows.length} item${A.shortRows.length===1?"":"s"} bought short.</b> Portions on those days are reduced.</div></div>` : "")
+      : `<div class="alert warn" style="margin-top:10px">${ICON.warn}<div><b>After shopping:</b> open <b>Enter actual purchase</b> and type what you really bought.</div></div>`}
+    <div class="small" style="display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--ink-2);margin-top:8px">
+      <span>Budget <b class="num" style="color:var(--ink)">${peso(s.amount)}</b></span>
+      <span>Plan <b class="num" style="color:var(--ink)">${peso(s.total)}</b></span>
+      ${bought ? `<span>Bought <b class="num" style="color:${diffPlan>0.004?"var(--crit-ink)":"var(--ink)"}">${peso(A.total)}</b></span>` : ""}
+      <span>${left >= 0 ? "Left" : "Over"} <b class="num" style="color:${left<0?"var(--crit-ink)":"var(--good-ink)"}">${peso(Math.abs(left))}</b></span>
+      <span>${fmtRange(s.start, s.end)}</span></div>
+    <div class="row no-print" style="margin-top:10px"><span class="spacer"></span><button class="btn sm danger" data-act="menuUnapprove">Cancel approval</button></div>
   </div>`;
   const actualCard = `<div class="card"><div class="row"><h2>Actual purchase vs plan</h2><span class="spacer"></span><b class="num">${peso(A.total)}</b></div>
     <p class="hint">Planned amounts are filled in. Change <b>Actual qty</b> and <b>Actual price</b> to what you really bought. Put 0 if not bought.</p>
@@ -1509,9 +1545,9 @@ function daysView(days, opts){
     `<button class="btn primary bigbtn no-print" data-chef="${sel}" style="margin-top:12px">${CAM}Chef card – photo for the cook</button>` +
     d.meals.map((ml, k) => `<div class="meal-block"><div class="meal-head"><span class="meal-pill">${MEAL_NAME[ml.m]}</span><span class="small muted" style="font-weight:600">${SIZE_LABEL[(d.sizes || opts.sizes)[ml.m]]}${ml.lvl != null && !ml.dish.special ? " · " + LEVELS[ml.lvl].name + " portions" : ""}</span><span class="spacer"></span><b class="num small">${peso(ml.cost)}</b></div>
       ${opts.dishCtl(d, sel, ml, k)}${ingTable(ml, false)}</div>`).join("") +
-    `<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:600;color:var(--brand)">Show cost of each ingredient</summary>${portionsTable(d)}</details>
+    `<details class="dayedit" style="margin-top:6px"><summary>Show the cost of each ingredient ›</summary>${portionsTable(d)}</details>
     <div class="daynav no-print"><button class="btn" data-mdaysel="${Math.max(0, sel-1)}" ${sel===0?"disabled":""}>‹ Previous day</button><button class="btn" data-mdaysel="${Math.min(days.length-1, sel+1)}" ${sel===days.length-1?"disabled":""}>Next day ›</button></div></div>`;
-  h += `<div class="card glance"><h2>All days at a glance</h2><p class="hint">Tap a day to open it.</p>${days.map((x, i) => `<div class="list-item" data-mdaysel="${i}" style="${i===sel?"background:var(--brand-soft);":""}"><div class="main"><div class="name">Day ${i+1} · ${fmtLong(x.date)} ${opts.okFn && opts.okFn(i) ? `<span class="tag" style="background:var(--good-bg);color:var(--good-ink)">approved</span>` : ""}</div>
+  h += `<div class="card glance"><h2>All days</h2>${days.map((x, i) => `<div class="list-item" data-mdaysel="${i}" style="${i===sel?"background:var(--brand-soft);":""}"><div class="main"><div class="name">Day ${i+1} · ${fmtLong(x.date)} ${opts.okFn && opts.okFn(i) ? `<span class="tag" style="background:var(--good-bg);color:var(--good-ink)">approved</span>` : ""}</div>
     <div class="meta">${x.meals.map(ml => `<b>${MEAL_NAME[ml.m][0]}</b> ${esc(ml.dish.n)}`).join(" · ")}</div></div><div class="amt num">${peso(x.total)}</div></div>`).join("")}</div>`;
   return h;
 }
@@ -1581,8 +1617,10 @@ function paintChef(){
 }
 function chefFileName(){ return `menu-${CHEF.model.date}.png`; }
 $("#chefPP").addEventListener("change", paintChef);
-$("#chefSave").addEventListener("click", () => { CHEF.canvas.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = chefFileName(); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); toast("Photo saved to Downloads"); }, "image/png"); });
+const chefB64 = () => CHEF.canvas.toDataURL("image/png").split(",")[1];
+$("#chefSave").addEventListener("click", () => { if (window.AndroidBridge){ AndroidBridge.saveFile(chefFileName(), chefB64(), "image/png"); return; } CHEF.canvas.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = chefFileName(); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); toast("Photo saved to Downloads"); }, "image/png"); });
 $("#chefShare").addEventListener("click", () => {
+  if (window.AndroidBridge){ AndroidBridge.shareFile(chefFileName(), chefB64(), "image/png"); return; }
   CHEF.canvas.toBlob(async b => {
     const file = new File([b], chefFileName(), {type:"image/png"});
     try { if (navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:"Menu for the cook"}); return; } } catch(e){ if (e && e.name === "AbortError") return; }
@@ -1590,6 +1628,7 @@ $("#chefShare").addEventListener("click", () => {
   }, "image/png");
 });
 $("#chefCopy").addEventListener("click", async () => { const t = chefText(CHEF.model, $("#chefPP").checked);
+  if (window.AndroidBridge){ AndroidBridge.copyText(t); return; }
   try { await navigator.clipboard.writeText(t); toast("Copied – paste it in Messenger or Viber"); } catch(_){ prompt("Copy this text:", t); } });
 document.addEventListener("click", e => {
   const c = e.target.closest("[data-chef]"); if (c){ openChef(+c.dataset.chef); return; }
@@ -1615,6 +1654,8 @@ function todayMenuCard(){
   }
   return "";
 }
+
+document.addEventListener("toggle", e => { if (e.target && e.target.matches && e.target.matches("[data-dayedit]")) window.DAYEDIT = e.target.open; }, true);
 
 load(); render();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});

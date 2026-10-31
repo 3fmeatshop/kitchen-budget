@@ -1,11 +1,12 @@
-HOME KITCHEN BUDGET – install as an app on your phone
+HOME KITCHEN BUDGET – Android app (APK)
 
-1. Put this whole folder on a free website host (for example Netlify or GitHub Pages).
-   On Netlify: sign in, choose "Add new site > Deploy manually", and drag this folder in.
-2. Open the website link on your phone in Chrome.
-3. Tap the menu (three dots) > "Install app" (or "Add to Home screen").
-4. The app icon appears on your home screen. After the first open it works without internet.
+GitHub builds the APK automatically every time you upload files.
+1. Open the repository on GitHub > Actions tab > "Build Android APK" (wait for a green check, about 5 minutes).
+2. Open the repository main page > Releases (right side) > newest "Kitchen Budget v1.x".
+3. On your phone, tap KitchenBudget.apk to download, then open it and tap Install.
+   (Allow "Install unknown apps" for Chrome if asked. If Play Protect warns, tap More details > Install anyway.)
 
-Moving your data: your data is saved inside each browser/app separately.
-In the old copy go to Budgets > Download backup, then in the installed app
-go to Budgets > Restore from backup and choose that file.
+Updating: upload the new index.html. GitHub builds a new version. Download it from Releases and tap Install;
+it updates over the old app and keeps your data.
+
+Your data stays on the phone. Use Budgets > Download backup now and then; the file is saved in Downloads/KitchenBudget.
